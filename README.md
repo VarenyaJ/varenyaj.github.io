@@ -1,3 +1,3 @@
 # Personal Website
 
-You can access my website [varenyaj.github.io](varenyaj.github.io)
+You can access my website [here](https://varenyaj.github.io)
