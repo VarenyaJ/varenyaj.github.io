@@ -1,364 +1,292 @@
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400|Poppins:300,400,800&display=swap");
+@font-face {
+    font-family: 'FiraCode-SemiBold';
+    src: url('../assets/fonts/FiraCode-SemiBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
 body {
-  margin: 0; /* Reset default margin */
+    margin: 0;
+    font-family: 'FiraCode-SemiBold', sans-serif;
 }
 
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(-45deg, #0b1a2e, #0b1a2e, #007581, #0b1a2e);
-  background-size: 400% 400%;
-  animation: gradient 25s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #0b1a2e, #0b1a2e, #007581, #0b1a2e);
+    background-size: 400% 400%;
+    animation: gradient 25s ease infinite;
 }
 
 .box {
-  text-align: center;
-  color: beige;
+    text-align: center;
+    color: beige;
 }
 
 .title {
-  position: relative;
-  margin-bottom: 20px; /* Adjust as needed */
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .title h1 {
-  font-family: "Poppins";
-  font-size: 32px;
-  margin: 0;
+    font-size: 32px;
+    margin: 0;
 }
 
 .title .block {
-  width: 0;
-  height: 4px; /* Adjust as needed */
-  background: #ffb510;
-  position: absolute;
-  bottom: -10px; /* Adjust as needed */
-  left: 50%;
-  transform: translateX(-50%);
+    width: 0;
+    height: 4px;
+    background: #ffb510;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .header_img {
-  margin-top: -50px; /* Adjust as needed */
+    margin-top: -50px;
 }
 
 .role {
-  margin-top: -20px; /* Adjust as needed */
+    margin-top: -20px;
 }
 
 .role .block {
-  width: 0;
-  height: 4px; /* Adjust as needed */
-  background: #e91e63;
-  margin-top: -10px; /* Adjust as needed */
+    width: 0;
+    height: 4px;
+    background: #e91e63;
+    margin-top: -10px;
 }
 
-
 nav.main-nav {
-  position: absolute;
-  top: 900px; /* Adjust as needed */
+    position: absolute;
+    top: 900px;
 }
 
 nav.main-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 nav.main-nav li {
-  display: inline-block;
-  margin-right: 20px; /* Adjust as needed */
+    display: inline-block;
+    margin-right: 20px;
 }
 
 nav.main-nav a {
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
 }
 
-/* Add your animations and other styles as needed */
-
-
 .container .box {
-  width: 250px;
-  height: 250px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
+    width: 250px;
+    height: 250px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .container .box .title {
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 50px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 50px;
 }
 
 .container .box .title .block {
-  width: 0%;
-  height: inherit;
-  background: #ffb510;
-  position: absolute;
-  animation: mainBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-  display: flex;
-  margin-top: -20px; /* Adjusted from -40px */
+    width: 0%;
+    height: inherit;
+    background: #ffb510;
+    position: absolute;
+    animation: mainBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
+    display: flex;
+    margin-top: -20px;
 }
 
 /* for safari, as safari settings are different */
 @media not all and (min-resolution: .001dpcm) {
-  @supports (-webkit-appearance: none) and (stroke-color: transparent) {
-    .container .box .title .block {
-      width: 0%;
-      height: inherit;
-      background: #ffb510;
-      position: absolute;
-      animation: mainBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-      display: flex;
-      margin-top: -20px; /* Adjusted from -20px */
-    }
+    @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+        .container .box .title .block {
+            width: 0%;
+            height: inherit;
+            background: #ffb510;
+            position: absolute;
+            animation: mainBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
+            display: flex;
+            margin-top: -20px;
+        }
 
-    .header_img {
-      margin-top: -140px;
+        .header_img {
+            margin-top: -140px;
+        }
     }
-  }
 }
 
 .container .box .title h1 {
-  font-family: "Poppins";
-  color: beige;
-  font-size: 32px;
-  -webkit-animation: mainFadeIn 2s forwards;
-  -o-animation: mainFadeIn 2s forwards;
-  animation: mainFadeIn 2s forwards;
-  animation-delay: 1.6s;
-  opacity: 0;
-  display: flex;
-  align-items: baseline;
-  position: relative;
+    font-family: 'FiraCode-SemiBold', sans-serif;
+    color: beige;
+    font-size: 32px;
+    -webkit-animation: mainFadeIn 2s forwards;
+    -o-animation: mainFadeIn 2s forwards;
+    animation: mainFadeIn 2s forwards;
+    animation-delay: 1.6s;
+    opacity: 0;
+    display: flex;
+    align-items: baseline;
+    position: relative;
 }
 
 .container .box .title h1 span {
-  width: 0px;
-  height: 0px;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  background: #ffb510;
-  -webkit-animation: load 0.6s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-  animation: popIn 0.8s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-  animation-delay: 2s;
-  margin-left: 5px;
-  margin-top: -10px;
-  position: absolute;
-  bottom: 13px;
-  right: -12px;
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    background: #ffb510;
+    animation: popIn 0.8s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
+    animation-delay: 2s;
+    margin-left: 5px;
+    margin-top: -10px;
+    position: absolute;
+    bottom: 13px;
+    right: -12px;
 }
-
-
-/*
-Finally got the right spacing for "ABOUT WORK CV CONTACT RESOURCES"
-
-nav.main-nav {
-  position: absolute;
-  top: 900px;
-}
-*/
-
-
-/*
-in ".container .box .role .block", needed to change "height: 100px;" from "height: inherit;" to fit this from the index.html:
-<div class="role" style="margin-top: 40px;">
-  <div class="block"></div>
-  <p>Passionate bioinformagician | Approximate knowledge of many things</p>
-</div>
 
 .container .box .role {
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 40px;
+    width: 100%;
+    position: absolute;
+    bottom: -20px;
+    display: flex;
+    align-items: center;
+    height: 100px;
 }
+
 .container .box .role .block {
-  width: 0%;
-  height: 100px;
-  background: #e91e63;
-  position: absolute;
-  animation: secBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-  animation-delay: 2s;
-  display: flex;
-  margin-top: -50px;
-}
-
-*/
-/* for safari, as safari settings are different */
-/*
-
-@media not all and (min-resolution:.001dpcm)
-{ @supports (-webkit-appearance:none) and (stroke-color:transparent) {
-
-  .container .box .role .block {
     width: 0%;
-    height: inherit;
+    height: 100px;
     background: #e91e63;
     position: absolute;
     animation: secBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
     animation-delay: 2s;
     display: flex;
-    margin-top: -28px;
-  }
-
-}}
-
-*/
-
-/* ... (Previous CSS) ... */
-
-/* ... (previous CSS rules) ... */
-
-.container .box .role {
-  width: 100%;
-  position: absolute;
-  bottom: -20px;
-  display: flex;
-  align-items: center;
-  height: 100px; /* Adjusted from 40px */
-}
-
-.container .box .role .block {
-  width: 0%;
-  height: 100px; /* Match the height with .role */
-  background: #e91e63;
-  position: absolute;
-  animation: secBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-  animation-delay: 2s;
-  display: flex;
-  top: -20px; /* Adjusted from -50px */
+    top: -20px;
 }
 
 /* For safari, as safari settings are different */
 @media not all and (min-resolution: .001dpcm) {
-  @supports (-webkit-appearance: none) and (stroke-color: transparent) {
-    .container .box .role .block {
-      width: 0%;
-      height: inherit;
-      background: #e91e63;
-      position: absolute;
-      animation: secBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
-      animation-delay: 2s;
-      display: flex;
-      top: 0;
+    @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+        .container .box .role .block {
+            width: 0%;
+            height: inherit;
+            background: #e91e63;
+            position: absolute;
+            animation: secBlock 2s cubic-bezier(0.74, 0.06, 0.4, 0.92) forwards;
+            animation-delay: 2s;
+            display: flex;
+            top: 0;
+        }
     }
-  }
 }
 
 nav.main-nav {
-  margin-top: -40px; /* Adjusted from -20px */
+    margin-top: -40px;
 }
 
-
-
-
-
-
-
-
-
 .container .box .role p {
-  animation: secFadeIn 2s forwards;
-  animation-delay: 3.2s;
-  opacity: 0;
-  font-weight: 400;
-  font-family: "Lato";
-  color:beige;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 5px;
-  margin-top: -30px;
+    animation: secFadeIn 2s forwards;
+    animation-delay: 3.2s;
+    opacity: 0;
+    font-weight: 400;
+    font-family: 'FiraCode-SemiBold', sans-serif;
+    color: beige;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-top: -30px;
 }
 
 @keyframes mainBlock {
-  0% {
-    width: 0%;
-    left: 0;
-  }
-  50% {
-    width: 100%;
-    left: 0;
-  }
-  100% {
-    width: 0;
-    left: 100%;
-  }
+    0% {
+        width: 0%;
+        left: 0;
+    }
+    50% {
+        width: 100%;
+        left: 0;
+    }
+    100% {
+        width: 0;
+        left: 100%;
+    }
 }
 @keyframes secBlock {
-  0% {
-    width: 0%;
-    left: 0;
-  }
-  50% {
-    width: 100%;
-    left: 0;
-  }
-  100% {
-    width: 0;
-    left: 100%;
-  }
+    0% {
+        width: 0%;
+        left: 0;
+    }
+    50% {
+        width: 100%;
+        left: 0;
+    }
+    100% {
+        width: 0;
+        left: 100%;
+    }
 }
 @keyframes mainFadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 @keyframes popIn {
-  0% {
-    width: 0px;
-    height: 0px;
-    background: #e9d856;
-    border: 0px solid #ddd;
-    opacity: 0;
-  }
-  50% {
-    width: 10px;
-    height: 10px;
-    background: #e9d856;
-    opacity: 1;
-    bottom: 45px;
-  }
-  65% {
-    width: 7px;
-    height: 7px;
-    bottom: 0px;
-    width: 15px;
-  }
-  80% {
-    width: 10px;
-    height: 10px;
-    bottom: 20px;
-  }
-  100% {
-    width: 7px;
-    height: 7px;
-    background: #e9d856;
-    border: 0px solid #222;
-    bottom: 8px;
-  }
+    0% {
+        width: 0px;
+        height: 0px;
+        background: #e9d856;
+        border: 0px solid #ddd;
+        opacity: 0;
+    }
+    50% {
+        width: 10px;
+        height: 10px;
+        background: #e9d856;
+        opacity: 1;
+        bottom: 45px;
+    }
+    65% {
+        width: 7px;
+        height: 7px;
+        bottom: 0px;
+        width: 15px;
+    }
+    80% {
+        width: 10px;
+        height: 10px;
+        bottom: 20px;
+    }
+    100% {
+        width: 7px;
+        height: 7px;
+        background: #e9d856;
+        border: 0px solid #222;
+        bottom: 8px;
+    }
 }
 @keyframes secFadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.5;
-  }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.5;
+    }
 }
 
 
@@ -403,32 +331,30 @@ nav.main-nav {
 
 
 @media (min-width:768px) {
-.footer_txt {
-  font-family: 'Gamja Flower', cursive;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  color: #e91e63;
-  text-align: center;
+    .footer_txt {
+        font-family: 'Gamja Flower', cursive;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        color: #e91e63;
+        text-align: center;
+    }
 }
 
+@media (min-width:1px) and (max-width:767px) {
+    .footer_txt {
+        font-family: 'Gamja Flower', cursive;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        color: #e91e63;
+        text-align: center;
+        font-size: 15px;
+        align-items: center;
+    }
 }
-
-@media (min-width:1px) and (max-width:767px)  {
-  .footer_txt {
-    font-family: 'Gamja Flower', cursive;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    color: #e91e63;
-    text-align: center;
-    font-size: 15px;
-    align-items: center;
-  }
-  
-  }
 
 .fullpage-section.block--hero {
     padding: 50px 0; /* Adjust the padding as needed */
