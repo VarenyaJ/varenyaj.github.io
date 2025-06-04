@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>Space Invaders Clone</title>
+ <style>
+   /*
+     We use a <canvas> element to draw our game.
+     Here we ensure it's centered and has a black background.
+   */
+   body {
+     margin: 0;               /* remove default margins */
+     background: black;       /* the "space" background around the canvas */
+     overflow: hidden;        /* no scrollbars */
+   }
+   canvas {
+     display: block;          /* make <canvas> a block so margin:auto centers it */
+     margin: 0 auto;          /* center horizontally */
+     background: #000;        /* black game area */
+   }
+ </style>
+</head>
+<body>
+ <!--
+   This is our drawing surface.
+   All game graphics (ship, invaders, bullets) get painted here.
+ -->
+ <canvas id="gameCanvas" width="480" height="320"></canvas>
+
+ <script>
+ // ====================================================
+ // 1) SET UP - grab the <canvas> and its "2D" drawing tool
+ // ====================================================
+ const canvas = document.getElementById('gameCanvas');
+ // getContext('2d') returns an object with methods for drawing shapes, text, images...etc.
+ const ctx = canvas.getContext('2d');
+
+ // ====================================================
+ // 2) GAME VARIABLES - track positions, sizes, and state
+ // ====================================================
+ // --- Player ship ---
+ const playerWidth  = 40;                  // width of the ship in pixels
+ const playerHeight = 10;                  // height of the ship
+ let   playerX      = (canvas.width - playerWidth) / 2;
+                                           // start horizontally centered
+ const playerY      = canvas.height - playerHeight - 10;
+                                           // 10px above bottom edge
+ const playerSpeed  = 5;                   // how many pixels we move per frame
+
+ // --- Invaders grid ---
+ const invaderRowCount    = 3;             // how many rows of aliens
+ const invaderColCount    = 5;             // how many columns
+ const invaderWidth       = 30;            // size of each alien
+ const invaderHeight      = 20;
+ const invaderPadding     = 10;            // space between aliens
+ const invaderOffsetTop   = 30;            // top margin
+ const invaderOffsetLeft  = 30;            // left margin
+ let   invaders = [];                      // we'll fill this with objects
+
+ // --- Bullets fired by the player ---
+ // Each bullet is an object { x, y, dy }, where dy is its speed.
+ const bullets = [];
+
+ // --- Game state ---
+ let score    = 0;                         // how many invaders you've shot
+ let gameOver = false;                     // stop the loop on lose/win
+
+ // ====================================================
+ // 3) CREATE INVADERS - build our grid in memory
+ // ====================================================
+ function initInvaders() {
+   invaders = [];                          // start with an empty list
+   // nested loops: for each row, for each column...
+   for (let row = 0; row < invaderRowCount; row++) {
+     for (let col = 0; col < invaderColCount; col++) {
+       // calculate x,y based on column,row,indexes, plus padding/offsets
+       const x = invaderOffsetLeft + col * (invaderWidth + invaderPadding);
+       const y = invaderOffsetTop  + row * (invaderHeight + invaderPadding);
+       // push a new "alive" invader into our array
+       invaders.push({ x: x, y: y, status: 1 });
+     }
+   }
+ }
+ // build them once at game start
+ initInvaders();
+
+ // ====================================================
+ // 4) DRAWING FUNCTIONS - paint each part on the canvas
+ // ====================================================
+ function drawPlayer() {
+   // set fill color...
+   ctx.fillStyle = 'white';
+   // ...and draw a rectangle: (x, y, width, height)
+   ctx.fillRect(playerX, playerY, playerWidth, playerHeight);
+ }
+
+ function drawInvaders() {
+   ctx.fillStyle = 'lime';  // bright green
+   invaders.forEach(inv => {
+     if (inv.status === 1) {
+       // only draw invaders whose status = "alive"
+       ctx.fillRect(inv.x, inv.y, invaderWidth, invaderHeight);
+     }
+   });
+ }
+
+ function drawBullets() {
+   ctx.fillStyle = 'red';
+   bullets.forEach(b => {
+     // draw each bullet as a thin vertical rectangle
+     ctx.fillRect(b.x, b.y, 2, 10);
+   });
+ }
+
+ function drawScore() {
+   ctx.fillStyle = 'white';
+   ctx.font = '16px Arial';
+   // draw text at (8, 20)
+   ctx.fillText('Score: ' + score, 8, 20);
+ }
+
+ // ====================================================
+ // 5) GAME LOGIC - movement, collisions, win/lose checks
+ // ====================================================
+ // how fast the invaders move horizontally
+ let invaderDx = 1;
+
+ function updateGame() {
+   // 1) MOVE BULLETS upward (y decreases)
+   bullets.forEach((b, idx) => {
+     b.y += b.dy;
+     // remove bullet if it goes off the top
+     if (b.y < 0) bullets.splice(idx, 1);
+   });
+
+   // 2) MOVE INVADERS side-to-side, and drop down on edge
+   let hitEdge = false;
+   invaders.forEach(inv => {
+     if (inv.status === 1) {
+       inv.x += invaderDx;
+       // check if any invader hits left/right wall
+       if (inv.x + invaderWidth > canvas.width || inv.x < 0) {
+         hitEdge = true;
+       }
+     }
+   });
+   if (hitEdge) {
+     // reverse direction
+     invaderDx = -invaderDx;
+     // move all invaders down by 10px
+     invaders.forEach(inv => inv.y += 10);
+   }
+
+   // 3) CHECK BULLET-INVADER COLLISIONS
+   bullets.forEach((b, bIdx) => {
+     invaders.forEach(inv => {
+       if (inv.status === 1 &&
+           b.x > inv.x && b.x < inv.x + invaderWidth &&
+           b.y > inv.y && b.y < inv.y + invaderHeight) {
+         // if bullet is within invader's box -> hit!
+         inv.status = 0;      // mark invader "dead"
+         bullets.splice(bIdx, 1);  // remove this bullet
+         score += 1;          // increment score
+       }
+     });
+   });
+
+   // 4) CHECK FOR WIN: if no invaders remain "alive"
+   const anyLeft = invaders.some(inv => inv.status === 1);
+   if (!anyLeft) {
+     alert('YOU WIN! Reload to play again.');
+     gameOver = true;
+   }
+
+   // 5) CHECK FOR LOSE: invader reaches bottom or hits player
+   invaders.forEach(inv => {
+     // if invader's y + height overlaps the player's y
+     if (inv.status === 1 &&
+         inv.y + invaderHeight > playerY) {
+       alert('GAME OVER! Reload to try again.');
+       gameOver = true;
+     }
+   });
+ }
+
+ // ====================================================
+ // 6) RENDER & LOOP - clear, draw, update, then repeat
+ // ====================================================
+ function gameLoop() {
+   // clear entire canvas each frame
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+   // draw everything in its current position
+   drawPlayer();
+   drawInvaders();
+   drawBullets();
+   drawScore();
+
+   // update positions & game state
+   updateGame();
+
+   // if the game isn't over, ask the browser for the next frame
+   if (!gameOver) {
+     requestAnimationFrame(gameLoop);
+   }
+ }
+
+ // start the loop
+ gameLoop();
+
+ // ====================================================
+ // 7) INPUT HANDLING - move ship & fire bullets
+ // ====================================================
+ // track whether left/right arrows are pressed
+ let leftPressed  = false;
+ let rightPressed = false;
+
+ // when a key is pressed down...
+ document.addEventListener('keydown', function(event) {
+   if (event.key === 'ArrowLeft')  leftPressed  = true;
+   if (event.key === 'ArrowRight') rightPressed = true;
+   // spacebar (may be ' ' or 'Spacebar' in some browsers)
+   if (event.key === ' ' || event.key === 'Spacebar') {
+     // create a new bullet at the ship's center top
+     bullets.push({
+       x: playerX + playerWidth/2,
+       y: playerY,
+       dy: -4   // negative y = upward motion
+     });
+   }
+ });
+
+ // when a key is released...
+ document.addEventListener('keyup', function(event) {
+   if (event.key === 'ArrowLeft')  leftPressed  = false;
+   if (event.key === 'ArrowRight') rightPressed = false;
+ });
+
+ // continuously move the player based on arrow keys
+ function movePlayer() {
+   if (leftPressed && playerX > 0) {
+     playerX -= playerSpeed;
+   }
+   if (rightPressed && playerX < canvas.width - playerWidth) {
+     playerX += playerSpeed;
+   }
+   // schedule next check (so movement is smooth)
+   if (!gameOver) {
+     requestAnimationFrame(movePlayer);
+   }
+ }
+ // start listening for continuous movement
+ movePlayer();
+
+ // ====================================================
+ // END OF SCRIPT
+ // ====================================================
+ </script>
+</body>
+</html>
