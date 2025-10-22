@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog posts and writings on bioinformatics, computational biology, and genomics">
+    <title>Writing | VARENYA(1)</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="man-header">
+            <span>VARENYA(1)</span>
+            <span>Writing</span>
+            <span>VARENYA(1)</span>
+        </div>
+        <nav class="site-nav">
+            <a href="index.html">Home</a>
+            <a href="#writing">Writing</a>
+            <a href="projects.html">Projects</a>
+            <a href="assets/docs/Varenya_Jain_CV.pdf">CV</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="writing">
+            <h1>WRITING</h1>
+            <p>A collection of my thoughts, research notes, and technical writings on bioinformatics, computational biology, and whatever else catches my attention.</p>
+
+            <ul class="post-list">
+                <!-- Example Post -->
+                <li class="post-item">
+                    <div class="post-date">October 21, 2025</div>
+                    <div class="post-title">
+                        <a href="posts/welcome-to-my-blog.html">Welcome to My Blog</a>
+                    </div>
+                    <div class="post-description">
+                        First post on my new man-page style site. Why I chose this aesthetic and what to expect from this blog.
+                    </div>
+                    <div class="post-tags">
+                        <span class="tag">meta</span>
+                        <span class="tag">bioinformatics</span>
+                        <span class="tag">introduction</span>
+                    </div>
+                </li>
+
+                <!-- Add more posts here as you write them -->
+                <!-- Template:
+                <li class="post-item">
+                    <div class="post-date">Month Day, Year</div>
+                    <div class="post-title">
+                        <a href="posts/your-post.html">Post Title</a>
+                    </div>
+                    <div class="post-description">
+                        Brief description of the post.
+                    </div>
+                    <div class="post-tags">
+                        <span class="tag">tag1</span>
+                        <span class="tag">tag2</span>
+                    </div>
+                </li>
+                -->
+            </ul>
+
+            <p style="color: var(--secondary-color); font-style: italic; margin-top: 30px;">
+                More posts coming soon! Topics will include genomics workflows, bioinformatics tools, research updates, and technical tutorials.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="man-footer">
+            <span>varenyaj.github.io</span>
+            <span id="current-date">October 2025</span>
+            <span>VARENYA(1)</span>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.85em;">
+            <a href="index.html#contact">Contact</a> | <a href="index.html">Back to Home</a>
+        </p>
+    </footer>
+
+    <script>
+        // Update date
+        const date = new Date();
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+        document.getElementById('current-date').textContent = 
+            months[date.getMonth()] + ' ' + date.getFullYear();
+    </script>
+</body>
+</html>
