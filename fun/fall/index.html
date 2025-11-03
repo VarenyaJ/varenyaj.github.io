@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetris Deluxe Fixed</title>
+<style>
+ body {
+   background: #111;
+   color: #fff;
+   font-family: Courier, monospace;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: flex-start;
+   height: 100vh;
+   margin: 0;
+   padding-top: 10px;
+ }
+ h1 {
+   margin: 5px 0;
+ }
+ #legend {
+   background: #222;
+   color: #0f0;
+   font-size: 14px;
+   padding: 5px 10px;
+   margin-bottom: 10px;
+   border: 1px solid #555;
+   border-radius: 4px;
+   line-height: 1.5em;
+   text-align: center;
+ }
+ canvas {
+   border: 2px solid #fff;
+   background: #000;
+ }
+ #score {
+   margin-top: 10px;
+ }
+</style>
+</head>
+<body>
+<h1>Tetris Deluxe</h1>
+
+<div id="legend">
+Controls: W/Up=Rotate | A/Left=Left | S/Down=Drop | D/Right=Right | P=Pause/Resume | R=Restart
+</div>
+
+<canvas id="gameCanvas" width="200" height="400"></canvas>
+<div id="score">Score: 0</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const ROWS = 20;
+const COLS = 10;
+const BLOCK = 20;
+
+let board = [];
+let score = 0;
+let dropInterval = 500;
+let lastTime = 0;
+let dropCounter = 0;
+let gameOver = false;
+let paused = false;
+
+const COLORS = [
+ null,
+ "#f00", "#0f0", "#00f",
+ "#ff0", "#0ff", "#f0f", "#fa0",
+ "#a0f", "#08f", "#3f3"
+];
+
+// classic + bonus shapes
+const SHAPES = {
+ I: [[1,1,1,1]],
+ J: [[2,0,0],[2,2,2]],
+ L: [[0,0,3],[3,3,3]],
+ O: [[4,4],[4,4]],
+ S: [[0,5,5],[5,5,0]],
+ T: [[0,6,0],[6,6,6]],
+ Z: [[7,7,0],[0,7,7]],
+ PLUS: [[0,8,0],[8,8,8],[0,8,0]],
+ BIGL: [[9,0,0],[9,0,0],[9,9,9]],
+ SMALLS: [[10,10,0],[0,10,10]]
+};
+
+function createMatrix(w,h){
+ const m=[];
+ while(h--) m.push(new Array(w).fill(0));
+ return m;
+}
+
+function drawMatrix(matrix,offset){
+ matrix.forEach((row,y)=>{
+   row.forEach((val,x)=>{
+     if(val){
+       ctx.fillStyle = COLORS[val];
+       ctx.fillRect((x+offset.x)*BLOCK,(y+offset.y)*BLOCK,BLOCK-1,BLOCK-1);
+     }
+   });
+ });
+}
+
+function merge(board,piece){
+ piece.matrix.forEach((row,y)=>{
+   row.forEach((val,x)=>{
+     if(val) board[y+piece.pos.y][x+piece.pos.x]=val;
+   });
+ });
+}
+
+function collide(board,piece){
+ const [m,o]=[piece.matrix,piece.pos];
+ for(let y=0;y<m.length;y++){
+   for(let x=0;x<m[y].length;x++){
+     if(m[y][x] && (
+       !board[y+o.y] ||
+       board[y+o.y][x+o.x] !== 0
+     )){
+       return true;
+     }
+   }
+ }
+ return false;
+}
+
+function playerReset(){
+ const keys=Object.keys(SHAPES);
+ const shape=keys[Math.floor(Math.random()*keys.length)];
+ player.matrix=SHAPES[shape].map(r=>r.slice());
+ player.pos.y=0;
+ player.pos.x=(COLS/2|0)-(player.matrix[0].length/2|0);
+ if(collide(board,player)){
+   board.forEach(row=>row.fill(0));
+   score=0;
+   gameOver=true;
+ }
+}
+
+function rotateMatrix(matrix){
+ const N = matrix.length;
+ const M = matrix[0].length;
+ let result = Array(M).fill().map(()=>Array(N).fill(0));
+ for(let y=0;y<N;y++){
+   for(let x=0;x<M;x++){
+     result[x][N-1-y] = matrix[y][x];
+   }
+ }
+ return result;
+}
+
+function playerRotate(dir){
+ const rotated = dir>0 ? rotateMatrix(player.matrix) : rotateMatrix(rotateMatrix(rotateMatrix(player.matrix)));
+ const pos = player.pos.x;
+ let offset = 1;
+ player.matrix = rotated;
+ while(collide(board,player)){
+   player.pos.x += offset;
+   offset = -(offset + (offset>0 ? 1 : -1));
+   if(offset > player.matrix[0].length){
+     player.matrix = dir>0 ? rotateMatrix(rotateMatrix(rotateMatrix(rotated))) : rotateMatrix(rotated);
+     player.pos.x = pos;
+     return;
+   }
+ }
+}
+
+function playerDrop(){
+ player.pos.y++;
+ if(collide(board,player)){
+   player.pos.y--;
+   merge(board,player);
+   playerReset();
+   arenaSweep();
+ }
+ dropCounter=0;
+}
+
+function playerMove(offset){
+ player.pos.x+=offset;
+ if(collide(board,player)) player.pos.x-=offset;
+}
+
+function arenaSweep(){
+ outer: for(let y=board.length-1;y>=0;y--){
+   for(let x=0;x<board[y].length;x++){
+     if(board[y][x]===0) continue outer;
+   }
+   const row=board.splice(y,1)[0].fill(0);
+   board.unshift(row);
+   y++;
+   score+=100;
+   document.getElementById("score").textContent="Score: "+score;
+ }
+}
+
+function draw(){
+ ctx.fillStyle="#000";
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ drawMatrix(board,{x:0,y:0});
+ drawMatrix(player.matrix,player.pos);
+}
+
+function update(time=0){
+ const delta=time-lastTime;
+ lastTime=time;
+ if(!paused && !gameOver){
+   dropCounter+=delta;
+   if(dropCounter>dropInterval) playerDrop();
+ }
+ draw();
+ if(paused){
+   ctx.fillStyle="white";
+   ctx.font="20px Courier";
+   ctx.fillText("PAUSED",60,200);
+ }
+ if(gameOver){
+   ctx.fillStyle="white";
+   ctx.font="18px Courier";
+   ctx.fillText("GAME OVER - Press R",20,canvas.height/2);
+ } else {
+   requestAnimationFrame(update);
+ }
+}
+
+document.addEventListener("keydown",e=>{
+ const k=e.key.toLowerCase();
+ if((k==="arrowleft"||k==="a") && !paused) playerMove(-1);
+ else if((k==="arrowright"||k==="d") && !paused) playerMove(1);
+ else if((k==="arrowdown"||k==="s") && !paused) playerDrop();
+ else if((k==="arrowup"||k==="w") && !paused) playerRotate(1);
+ else if(k==="p") paused=!paused;
+ else if(k==="r"){
+   board=createMatrix(COLS,ROWS);
+   playerReset();
+   score=0;
+   document.getElementById("score").textContent="Score: 0";
+   gameOver=false;
+   paused=false;
+   update();
+ }
+});
+
+board=createMatrix(COLS,ROWS);
+const player={pos:{x:0,y:0},matrix:null};
+playerReset();
+update();
+</script>
+</body>
+</html>
