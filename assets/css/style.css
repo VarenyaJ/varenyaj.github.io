@@ -8,26 +8,27 @@
    ============================================ */
 
 :root {
-  --bg-color: #fefefe;
-  --text-color: #1a1a1a;
-  --accent-color: #663399;
-  --secondary-color: #555;
-  --border-color: #ddd;
-  --code-bg: #f5f5f5;
-  --link-hover-bg: #663399;
+  --bg-color: #fdf9f5;           /* parchment white */
+  --text-color: #2e2b26;         /* warm dark gray-brown */
+  --accent-color: #e58b2b;       /* amber-orange accent */
+  --secondary-color: #5f574f;    /* taupe secondary */
+  --border-color: #e7ded3;       /* warm beige border */
+  --code-bg: #f6eee6;            /* faint sand tone */
+  --link-hover-bg: #e58b2b;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #1a1a1a;
-    --text-color: #e0e0e0;
-    --accent-color: #9370db;
-    --secondary-color: #aaa;
-    --border-color: #333;
-    --code-bg: #2a2a2a;
-    --link-hover-bg: #9370db;
+    --bg-color: #1f1a16;         /* dark umber */
+    --text-color: #f0e9e2;       /* parchment white */
+    --accent-color: #ffae5f;     /* golden orange */
+    --secondary-color: #c1b6a8;  /* tan-gray secondary */
+    --border-color: #3b332c;
+    --code-bg: #27211c;
+    --link-hover-bg: #ffae5f;
   }
 }
+
 
 /* ============================================
    Reset & Base
