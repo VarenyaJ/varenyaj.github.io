@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab</title>
+    <script>
+      (() => {
+        const storedTheme = window.localStorage.getItem("theme");
+        const preferredLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        const theme = storedTheme || (preferredLight ? "light" : "dark");
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+<div class="cursor-shell" aria-hidden="true">
+      <div class="cursor-ring" id="cursor-ring"></div>
+      <div class="cursor-dot" id="cursor-dot"></div>
+      <div class="cursor-label" id="cursor-label">open</div>
+    </div>
+    <div class="site-frame">
+      <header class="topbar">
+        <div class="topbar-progress" id="topbar-progress"></div>
+
+<div class="topbar-tools">
+          <button class="theme-toggle soundtrack-toggle" id="soundtrack-toggle" type="button" aria-label="Play soundtrack">
+            <span class="soundtrack-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M4 9h4l5-4v14l-5-4H4z"></path>
+                <path d="M16 9.5a4.5 4.5 0 0 1 0 5"></path>
+                <path d="M18.8 7a8 8 0 0 1 0 10"></path>
+              </svg>
+            </span>
+            <span id="soundtrack-label">play</span>
+          </button>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme">
+            theme / light
+          </button>
+        </div>
+      </header>
+
+      <main id="home">
+        <section class="hero">
+
+<aside class="signal-panel" aria-label="Generative signal diagram">
+            <div class="signal-topline">
+              <p>visor feed</p>
+              <p>forest chamber / probe deck</p>
+            </div>
+
+            <div class="signal-stage" id="signal-stage">
+              <canvas id="signal-canvas" aria-hidden="true"></canvas>
+              <div class="signal-ceiling" aria-hidden="true"></div>
+              <div class="signal-floor" aria-hidden="true"></div>
+
+              <div class="probe-stack">
+                <article class="probe-panel probe-panel-left probe-panel-map">
+                  <div class="probe-head">
+                    <p>probe / 01</p>
+                    <p>archive field</p>
+                  </div>
+                  <p class="probe-live" id="probe-field-live">depth axis / stable</p>
+                  <p class="probe-note" id="probe-field-note">signal archive / chamber specimen map</p>
+                  <canvas class="probe-canvas" data-viz="fieldprobe" aria-hidden="true"></canvas>
+                </article>
+
+                <article class="probe-panel probe-panel-right probe-panel-right-top">
+                  <div class="probe-head">
+                    <p>probe / 02</p>
+                    <p>vortex readout</p>
+                  </div>
+                  <p class="probe-live" id="probe-swirl-live">waterfall pulse / low</p>
+                  <p class="probe-note" id="probe-swirl-note">pulse monitor / environmental intake</p>
+                  <canvas class="probe-canvas" data-viz="swirl" aria-hidden="true"></canvas>
+                </article>
+
+                <article class="probe-panel probe-panel-right probe-panel-right-bottom probe-panel-geometry">
+                  <div class="probe-head">
+                    <p>probe / 03</p>
+                    <p>section geometry</p>
+                  </div>
+                  <p class="probe-live" id="probe-section-live">lock vector / idle</p>
+                  <p class="probe-note" id="probe-section-note">azimuth frame / chamber section cut</p>
+                  <canvas class="probe-canvas" data-viz="gridslice" aria-hidden="true"></canvas>
+                </article>
+              </div>
+
+              <div class="signal-overlay">
+                <div class="signal-marker-block">
+                  <div class="signal-marker">
+                    <p>chamber / 01</p>
+                    <p>slow drift / synthetic woodland / live capture</p>
+                  </div>
+                  <div class="zoom-controls" aria-label="Chamber zoom presets">
+                    <p class="zoom-label">zoom</p>
+                    <div class="zoom-buttons">
+                      <button class="zoom-button" type="button" data-zoom-level="wide">01</button>
+                      <button class="zoom-button" type="button" data-zoom-level="field">02</button>
+                      <button class="zoom-button" type="button" data-zoom-level="close">03</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="signal-readout signal-readout-min">
+                  <p id="signal-readout-text">depth:+24 / lock:soft / feed:stable</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="transfer-band" aria-label="Chamber transfer readout">
+          <p class="transfer-kicker">transfer / 01</p>
+          <p class="transfer-copy">field extraction / archive handoff</p>
+          <p class="transfer-readout" id="transfer-readout">handoff / zoom:03 / pulse:31% / sweep:+0.08</p>
+        </section>
+
+
+<section class="visual-band" aria-label="Visual systems">
+          <article class="visual-card visual-card-wide">
+            <div class="visual-head">
+              <p class="section-label">system 02 / field</p>
+              <p>signal archive</p>
+            </div>
+            <canvas class="mini-canvas" data-viz="field" aria-hidden="true"></canvas>
+          </article>
+
+          <article class="visual-card visual-card-note">
+            <div class="visual-head">
+              <p class="section-label">system 02 / note</p>
+              <p>terrain</p>
+            </div>
+            <p class="visual-note">
+              Built for attention, play, and care.
+            </p>
+          </article>
+        </section>
+
+
+<section class="section-heading split-heading">
+          <div>
+            <p class="section-label">system 04 / operating notes</p>
+            <h2 id="principles">How I work.</h2>
+          </div>
+          <p class="section-note">Start with behavior. Keep it clear. Make it feel alive.</p>
+        </section>
+
+        <section class="principles-grid">
+          <article class="principle">
+            <div class="principle-top">
+              <p class="principle-index">01</p>
+              <canvas class="principle-canvas" data-viz="orbit" aria-hidden="true"></canvas>
+            </div>
+            <h3>Start with behavior</h3>
+            <p>The job comes first. The interface should serve the product, not distract from it.</p>
+          </article>
+
+          <article class="principle">
+            <div class="principle-top">
+              <p class="principle-index">02</p>
+              <canvas class="principle-canvas" data-viz="grid" aria-hidden="true"></canvas>
+            </div>
+            <h3>Reduce with edge</h3>
+            <p>Strip it back until the point is obvious, but keep enough character for it to feel human.</p>
+          </article>
+
+          <article class="principle">
+            <div class="principle-top">
+              <p class="principle-index">03</p>
+              <canvas class="principle-canvas" data-viz="branch" aria-hidden="true"></canvas>
+            </div>
+            <h3>Make the system legible</h3>
+            <p>Structure, states, and labels should teach the product on first contact.</p>
+          </article>
+
+          <article class="principle">
+            <div class="principle-top">
+              <p class="principle-index">04</p>
+              <canvas class="principle-canvas" data-viz="pulse" aria-hidden="true"></canvas>
+            </div>
+            <h3>Use motion as state</h3>
+            <p>Motion should guide timing, focus, and feedback, not compete for attention.</p>
+          </article>
+        </section>
+
+        <section class="about-band">
+
+<div class="about-panel">
+            <div class="visual-head">
+              <p class="about-panel-label">right now</p>
+              <p>products + interactive systems</p>
+            </div>
+            <canvas class="mini-canvas mini-canvas-short" data-viz="studio" aria-hidden="true"></canvas>
+            <p class="about-panel-copy">
+              I am especially drawn to games, digital wellbeing, ambient companionship, and gentle AI.
+            </p>
+          </div>
+        </section>
+
+        <section class="footer-band" aria-label="Signal footer">
+          <div class="footer-band-copy">
+            <p class="section-label">system 06 / stack</p>
+            <h2>I work across the full stack.</h2>
+            <p class="footer-band-note">
+              Web, mobile, backend, database, 3D, and hardware. I am comfortable moving across the whole product, not just one layer.
+            </p>
+            <div class="residue-readout" aria-label="Residue readout">
+              <p><span>web</span><strong>interfaces / systems / product surfaces</strong></p>
+              <p><span>mobile</span><strong>native app flows / interaction detail</strong></p>
+              <p><span>backend</span><strong>services / logic / infrastructure glue</strong></p>
+              <p><span>database</span><strong>schema / queries / data shape</strong></p>
+              <p><span>3d</span><strong>three.js / spatial interaction / realtime scenes</strong></p>
+              <p><span>hardware</span><strong>device thinking / physical interfaces / integration</strong></p>
+            </div>
+          </div>
+          <canvas class="mini-canvas mini-canvas-footer" data-viz="footer" aria-hidden="true"></canvas>
+        </section>
+      </main>
+
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
