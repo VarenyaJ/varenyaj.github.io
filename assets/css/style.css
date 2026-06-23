@@ -8,24 +8,34 @@
    ============================================ */
 
 :root {
-  --bg-color: #fdf9f5;           /* parchment white */
-  --text-color: #2e2b26;         /* warm dark gray-brown */
-  --accent-color: #e58b2b;       /* amber-orange accent */
-  --secondary-color: #5f574f;    /* taupe secondary */
-  --border-color: #e7ded3;       /* warm beige border */
-  --code-bg: #f6eee6;            /* faint sand tone */
-  --link-hover-bg: #e58b2b;
+  --bg-color: #fefbfc;           /* bright near-white */
+  --text-color: #111425;         /* deep navy ink */
+  --accent-color: #4d67f7;       /* vivid blue accent */
+  --secondary-color: #54608f;    /* muted slate-blue */
+  --border-color: #d9def5;       /* light blue-tinted border */
+  --code-bg: #eef1fe;            /* faint blue tint */
+  --link-hover-bg: #4d67f7;
+  --pop-blue: #86adff;           /* periwinkle */
+  --pop-gold: #ffd24e;           /* gold */
+  --pop-green: #6fe3ad;          /* mint green */
+  --pop-purple: #ccbbff;         /* lavender */
+  --pop-ink: #131730;            /* dark text for pop backgrounds */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #1f1a16;         /* dark umber */
-    --text-color: #f0e9e2;       /* parchment white */
-    --accent-color: #ffae5f;     /* golden orange */
-    --secondary-color: #c1b6a8;  /* tan-gray secondary */
-    --border-color: #3b332c;
-    --code-bg: #27211c;
-    --link-hover-bg: #ffae5f;
+    --bg-color: #111425;         /* deep navy */
+    --text-color: #f1f3fb;       /* bright near-white */
+    --accent-color: #86adff;     /* light periwinkle */
+    --secondary-color: #9aa6d6;  /* muted light slate */
+    --border-color: #2a3566;     /* navy border */
+    --code-bg: #1b2e60;          /* deep navy panel */
+    --link-hover-bg: #86adff;
+    --pop-blue: #86adff;         /* periwinkle */
+    --pop-gold: #ffd24e;         /* gold */
+    --pop-green: #6fe3ad;        /* mint green */
+    --pop-purple: #ccbbff;       /* lavender */
+    --pop-ink: #131730;          /* dark text for pop backgrounds */
   }
 }
 
@@ -124,7 +134,7 @@ code {
 pre {
   background-color: var(--code-bg);
   padding: 15px;
-  border-left: 3px solid var(--accent-color);
+  border-left: 3px solid var(--pop-gold);
   overflow-x: auto;
   margin: 20px 0;
 }
@@ -233,22 +243,28 @@ section {
 .skills-list {
   background-color: var(--code-bg);
   padding: 15px;
-  border-left: 3px solid var(--accent-color);
+  border-left: 3px solid var(--pop-green);
   margin: 10px 0;
   font-size: 0.9em;
 }
 
 .tag {
   display: inline-block;
-  background-color: var(--accent-color);
-  color: var(--bg-color);
+  background-color: var(--pop-blue);
+  color: var(--pop-ink);
   padding: 2px 8px;
   border-radius: 3px;
   font-size: 0.85em;
+  font-weight: bold;
   margin-right: 5px;
   margin-bottom: 5px;
   border: none;
 }
+
+.tag:nth-child(4n+1) { background-color: var(--pop-blue); }
+.tag:nth-child(4n+2) { background-color: var(--pop-gold); }
+.tag:nth-child(4n+3) { background-color: var(--pop-green); }
+.tag:nth-child(4n+4) { background-color: var(--pop-purple); }
 
 .tag:hover {
   opacity: 0.8;
@@ -340,8 +356,8 @@ footer {
    ============================================ */
 
 ::selection {
-  background-color: var(--accent-color);
-  color: var(--bg-color);
+  background-color: var(--pop-purple);
+  color: var(--pop-ink);
 }
 
 /* ============================================
