@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048: Mini Edition</title>
+<style>
+ body {
+   font-family: Courier, monospace;
+   background: #faf8ef;
+   color: #776e65;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   height: 100vh;
+   margin: 0;
+ }
+ h1 {
+   margin-bottom: 0.2em;
+ }
+ #game {
+   display: grid;
+   grid-template-columns: repeat(4, 80px);
+   grid-template-rows: repeat(4, 80px);
+   gap: 10px;
+   background: #bbada0;
+   padding: 10px;
+   border-radius: 10px;
+ }
+ .tile {
+   width: 80px;
+   height: 80px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 24px;
+   font-weight: bold;
+   border-radius: 5px;
+   background: #cdc1b4;
+ }
+ .t2 { background: #eee4da; }
+ .t4 { background: #ede0c8; }
+ .t8 { background: #f2b179; color: #f9f6f2; }
+ .t16 { background: #f59563; color: #f9f6f2; }
+ .t32 { background: #f67c5f; color: #f9f6f2; }
+ .t64 { background: #f65e3b; color: #f9f6f2; }
+ .t128 { background: #edcf72; color: #f9f6f2; font-size: 22px; }
+ .t256 { background: #edcc61; color: #f9f6f2; font-size: 22px; }
+ .t512 { background: #edc850; color: #f9f6f2; font-size: 22px; }
+ .t1024 { background: #edc53f; color: #f9f6f2; font-size: 18px; }
+ .t2048 { background: #edc22e; color: #f9f6f2; font-size: 18px; }
+ #score {
+   margin-top: 10px;
+   font-weight: bold;
+ }
+ #gameover {
+   margin-top: 20px;
+   font-size: 1.2rem;
+   color: #d33;
+ }
+</style>
+</head>
+<body>
+ <h1>2048: Mini Edition</h1>
+ <div id="game"></div>
+ <div id="score">Score: 0</div>
+ <div id="gameover"></div>
+
+<script>
+const gameEl = document.getElementById("game");
+const scoreEl = document.getElementById("score");
+const overEl = document.getElementById("gameover");
+
+let board = [];
+let score = 0;
+
+function init() {
+ board = Array(4).fill().map(()=>Array(4).fill(0));
+ score = 0;
+ overEl.textContent = "";
+ addRandom();
+ addRandom();
+ draw();
+}
+
+function addRandom() {
+ let empty = [];
+ for (let r=0;r<4;r++) {
+   for (let c=0;c<4;c++) {
+     if (board[r][c] === 0) empty.push({r,c});
+   }
+ }
+ if (empty.length === 0) return;
+ const spot = empty[Math.floor(Math.random()*empty.length)];
+ board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
+}
+
+function draw() {
+ gameEl.innerHTML = "";
+ for (let r=0;r<4;r++) {
+   for (let c=0;c<4;c++) {
+     const val = board[r][c];
+     const tile = document.createElement("div");
+     tile.className = "tile" + (val ? " t" + val : "");
+     tile.textContent = val ? val : "";
+     gameEl.appendChild(tile);
+   }
+ }
+ scoreEl.textContent = "Score: " + score;
+}
+
+function slide(row) {
+ let arr = row.filter(v => v !== 0);
+ for (let i = 0; i < arr.length - 1; i++) {
+   if (arr[i] === arr[i + 1]) {
+     arr[i] *= 2;
+     score += arr[i];
+     arr[i + 1] = 0;
+   }
+ }
+ arr = arr.filter(v => v !== 0);
+ while (arr.length < 4) arr.push(0);
+ return arr;
+}
+
+function rotateCW() {
+ const newB = Array(4).fill().map(()=>Array(4).fill(0));
+ for (let r=0;r<4;r++) {
+   for (let c=0;c<4;c++) {
+     newB[c][3 - r] = board[r][c];
+   }
+ }
+ board = newB;
+}
+
+function rotateCCW() {
+ const newB = Array(4).fill().map(()=>Array(4).fill(0));
+ for (let r=0;r<4;r++) {
+   for (let c=0;c<4;c++) {
+     newB[3 - c][r] = board[r][c];
+   }
+ }
+ board = newB;
+}
+
+function moveLeft() {
+ let before = JSON.stringify(board);
+ for (let r=0;r<4;r++) board[r] = slide(board[r]);
+ let after = JSON.stringify(board);
+ if (before !== after) {
+   addRandom();
+   draw();
+   checkGameOver();
+ }
+}
+
+function moveRight() {
+ let before = JSON.stringify(board);
+ for (let r=0;r<4;r++) {
+   board[r].reverse();
+   board[r] = slide(board[r]);
+   board[r].reverse();
+ }
+ let after = JSON.stringify(board);
+ if (before !== after) {
+   addRandom();
+   draw();
+   checkGameOver();
+ }
+}
+
+function moveUp() {
+ let before = JSON.stringify(board);
+ rotateCCW();
+ for (let r=0;r<4;r++) board[r] = slide(board[r]);
+ rotateCW();
+ let after = JSON.stringify(board);
+ if (before !== after) {
+   addRandom();
+   draw();
+   checkGameOver();
+ }
+}
+
+function moveDown() {
+ let before = JSON.stringify(board);
+ rotateCW();
+ for (let r=0;r<4;r++) board[r] = slide(board[r]);
+ rotateCCW();
+ let after = JSON.stringify(board);
+ if (before !== after) {
+   addRandom();
+   draw();
+   checkGameOver();
+ }
+}
+
+function checkGameOver() {
+ for (let r=0;r<4;r++) {
+   for (let c=0;c<4;c++) {
+     if (board[r][c] === 0) return;
+     if (r < 3 && board[r][c] === board[r + 1][c]) return;
+     if (c < 3 && board[r][c] === board[r][c + 1]) return;
+   }
+ }
+ overEl.textContent = "Game Over! Press R to restart.";
+}
+
+document.addEventListener("keydown", function(e) {
+ const k = e.key.toLowerCase();
+ if (k === "arrowleft" || k === "a") moveLeft();
+ else if (k === "arrowright" || k === "d") moveRight();
+ else if (k === "arrowup" || k === "w") moveUp();
+ else if (k === "arrowdown" || k === "s") moveDown();
+ else if (k === "r") init();
+});
+
+init();
+</script>
+</body>
+</html>

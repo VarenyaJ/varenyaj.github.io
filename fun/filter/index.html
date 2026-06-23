@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline Special Character Tool</title>
+<style>
+  body {
+    font-family: Courier, monospace;
+    background: #111;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 5px;
+  }
+  select, button {
+    margin: 5px;
+    padding: 6px 10px;
+    background: #222;
+    color: #eee;
+    border: 1px solid #555;
+    cursor: pointer;
+  }
+  button:hover, select:hover {
+    background: #333;
+  }
+  textarea {
+    width: 90%;
+    height: 120px;
+    background: #222;
+    color: #0f0;
+    border: 1px solid #555;
+    padding: 10px;
+    resize: vertical;
+    margin-top: 10px;
+  }
+  .panel {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin-top: 20px;
+  }
+  .block {
+    width: 48%;
+    background: #222;
+    padding: 10px;
+    border: 1px solid #555;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .highlight {
+    background: #ff0;
+    color: #000;
+  }
+  .label {
+    font-weight: bold;
+    color: #0af;
+    margin-bottom: 5px;
+  }
+  #controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 90%;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<h1>Special Character Converter (Offline)</h1>
+
+<textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+
+<div id="controls">
+  <select id="modeSelect">
+    <option value="ascii">Replace special characters by ASCII</option>
+    <option value="removeAccents">Remove accents and diacritics</option>
+    <option value="unicode">Replace by Unicode \\uXXXX</option>
+    <option value="alnum">Remove all non-alphanumeric (A-Z0-9)</option>
+    <option value="keepSpecial">Keep only non-ASCII special characters</option>
+    <option value="keepNonLatin">Keep only non-latin (not A-Z0-9)</option>
+    <option value="keepNonLetterDigit">Keep only non-letter/non-digit (Unicode)</option>
+  </select>
+  <button onclick="applyTransform()">Transform</button>
+  <button onclick="copyResult()">Copy Result</button>
+  <button onclick="resetText()">Reset</button>
+</div>
+
+<div class="panel">
+  <div class="block">
+    <div class="label">Before</div>
+    <div id="before"></div>
+  </div>
+  <div class="block">
+    <div class="label">After</div>
+    <div id="after"></div>
+  </div>
+</div>
+
+<script>
+function highlightDiff(before, after) {
+  let outBefore = "", outAfter = "";
+  const len = Math.max(before.length, after.length);
+  for (let i=0;i<len;i++){
+    const b = before[i] || "";
+    const a = after[i] || "";
+    if (b !== a) {
+      outBefore += '<span class="highlight">'+(b||" ")+'</span>';
+      outAfter += '<span class="highlight">'+(a||" ")+'</span>';
+    } else {
+      outBefore += b;
+      outAfter += a;
+    }
+  }
+  return {before: outBefore, after: outAfter};
+}
+
+function toAscii(str){
+  const map = {
+    'à':'a','á':'a','â':'a','ä':'a','ã':'a','å':'a','ā':'a',
+    'ç':'c','č':'c','ć':'c',
+    'è':'e','é':'e','ê':'e','ë':'e','ē':'e',
+    'ì':'i','í':'i','î':'i','ï':'i','ī':'i',
+    'ñ':'n',
+    'ò':'o','ó':'o','ô':'o','ö':'o','õ':'o','ø':'o','ō':'o',
+    'ù':'u','ú':'u','û':'u','ü':'u','ū':'u',
+    'ý':'y','ÿ':'y',
+    'ß':'ss','œ':'oe','æ':'ae'
+  };
+  return str.split('').map(ch=>map[ch]||ch).join('');
+}
+
+function removeAccents(str){
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function toUnicodeEscapes(str){
+  return str.split('').map(ch=>{
+    const code = ch.charCodeAt(0).toString(16).padStart(4,'0');
+    return '\\u'+code;
+  }).join('');
+}
+
+function onlyAlnum(str){
+  return str.replace(/[^A-Za-z0-9]/g,"");
+}
+
+function keepSpecial(str){
+  return str.replace(/[\x00-\x7F]/g,"");
+}
+
+function keepNonLatin(str){
+  return str.replace(/[A-Za-z0-9]/g,"");
+}
+
+function keepNonLetterDigit(str){
+  return str.replace(/[\p{L}\p{N}]/gu,"");
+}
+
+function applyTransform(){
+  const mode = document.getElementById("modeSelect").value;
+  const input = document.getElementById("inputText").value;
+  let output = "";
+  switch(mode){
+    case 'ascii': output = toAscii(input); break;
+    case 'removeAccents': output = removeAccents(input); break;
+    case 'unicode': output = toUnicodeEscapes(input); break;
+    case 'alnum': output = onlyAlnum(input); break;
+    case 'keepSpecial': output = keepSpecial(input); break;
+    case 'keepNonLatin': output = keepNonLatin(input); break;
+    case 'keepNonLetterDigit': output = keepNonLetterDigit(input); break;
+  }
+  const diff = highlightDiff(input, output);
+  document.getElementById("before").innerHTML = diff.before;
+  document.getElementById("after").innerHTML = diff.after;
+}
+
+function copyResult(){
+  const afterText = document.getElementById("after").innerText;
+  navigator.clipboard.writeText(afterText).then(()=>alert("Result copied!"));
+}
+
+function resetText(){
+  document.getElementById("inputText").value = "";
+  document.getElementById("before").innerHTML = "";
+  document.getElementById("after").innerHTML = "";
+}
+
+document.getElementById("inputText").addEventListener("input", applyTransform);
+</script>
+</body>
+</html>
