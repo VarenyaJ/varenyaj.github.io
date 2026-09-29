@@ -50,6 +50,48 @@
    width: 80px;
    height: 80px;
  }
+ #flags {
+   width: 100%;
+   margin-top: 8px;
+   font-size: 11px;
+   line-height: 1.6em;
+ }
+ .flag {
+   display: flex;
+   justify-content: space-between;
+   gap: 10px;
+   margin-top: 4px;
+ }
+ .state {
+   min-width: 3em;
+   padding: 0 4px;
+   text-align: center;
+   border: 1px solid #888;
+   border-radius: 3px;
+   background: #333;
+   color: #ddd;
+ }
+ .state.active, kbd.pressed {
+   background: #b5ff52;
+   color: #111;
+   border-color: #b5ff52;
+   font-weight: bold;
+ }
+ kbd {
+   display: inline-block;
+   padding: 0 4px;
+   margin: 2px 0;
+   border: 1px solid #888;
+   border-radius: 3px;
+   background: #292929;
+   color: #fff;
+   font: inherit;
+ }
+ #pause-status {
+   margin-top: 8px;
+   color: #b5ff52;
+   font-weight: bold;
+ }
  #controls {
    margin-top: 10px;
    font-size: 12px;
@@ -74,14 +116,18 @@
    <div id="level">Level: 1</div>
    <div id="highscore">High Score: 0</div>
 
-   <!-- New flag status panel -->
-   <div id="flags" style="font-size:11px; color:#0f0; margin-top:8px; line-height:1.4em;"></div>
+   <div id="pause-status" role="status">Playing</div>
+   <div id="flags" aria-live="polite"></div>
  </div>
 </div>
 
 <div id="controls">
- Move: A/D | Rotate: W | Drop: S | Hold: C<br>
- Restart: R | Toggles -- X=Extra Shapes | K=Wall Kick | G=Ghost
+ Move: <kbd data-key="a">A</kbd>/<kbd data-key="d">D</kbd> |
+ Rotate: <kbd data-key="w">W</kbd> | Drop: <kbd data-key="s">S</kbd> |
+ Hold: <kbd data-key="c">C</kbd><br>
+ Pause/Resume: <kbd data-key="p">P</kbd> | Restart: <kbd data-key="r">R</kbd><br>
+ Toggles: <kbd data-key="x">X</kbd>=Extra Shapes |
+ <kbd data-key="k">K</kbd>=Wall Kick | <kbd data-key="g">G</kbd>=Ghost
 </div>
 
 <script>
@@ -278,21 +324,34 @@ function draw(){
  drawMatrix(board,{x:0,y:0});
  drawGhost();
  drawMatrix(player.matrix,player.pos);
+ if(paused){
+   ctx.fillStyle="rgba(0,0,0,0.8)";
+   ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.save();
+   ctx.textAlign="center";
+   ctx.fillStyle="#b5ff52";
+   ctx.font="bold 24px monospace";
+   ctx.fillText("PAUSED",canvas.width/2,canvas.height/2-8);
+   ctx.fillStyle="#fff";
+   ctx.font="13px monospace";
+   ctx.fillText("Press P to resume",canvas.width/2,canvas.height/2+20);
+   ctx.restore();
+ }
 }
 
-/* --- New helper: shows flag statuses --- */
 function updateFlagsDisplay() {
- const el = document.getElementById("flags");
- if (!el) return;
- el.innerHTML = `
-   <b>Settings</b><br>
-   Extra Shapes: ${ENABLE_EXTRA_SHAPES ? "ON" : "OFF"}<br>
-   Wall Kick: ${ENABLE_WALL_KICK ? "ON" : "OFF"}<br>
-   Ghost Piece: ${ENABLE_GHOST ? "ON" : "OFF"}<br>
-   Combo: ${ENABLE_COMBO ? "ON" : "OFF"}<br>
-   Levels: ${ENABLE_LEVELS ? "ON" : "OFF"}<br>
-   Hold: ${ENABLE_HOLD ? "ON" : "OFF"}
- `;
+ const flags = [
+   ["Extra Shapes", ENABLE_EXTRA_SHAPES],
+   ["Wall Kick", ENABLE_WALL_KICK],
+   ["Ghost Piece", ENABLE_GHOST],
+   ["Combo", ENABLE_COMBO],
+   ["Levels", ENABLE_LEVELS],
+   ["Hold", ENABLE_HOLD]
+ ];
+ document.getElementById("flags").innerHTML = "<b>Settings</b>" + flags.map(
+   ([label, enabled]) => `<div class="flag"><span>${label}</span><span class="state${enabled ? " active" : ""}">${enabled ? "ON" : "OFF"}</span></div>`
+ ).join("");
+ document.getElementById("pause-status").textContent = paused ? "Paused — P to resume" : "Playing";
 }
 
 function update(time=0){
@@ -302,20 +361,56 @@ function update(time=0){
    if(dropCounter>dropInterval) playerDrop();
  }
  draw();
- if(!gameOver) requestAnimationFrame(update);
+ requestAnimationFrame(update);
+}
+
+const pressedKeys = new Set();
+const keyAliases = {arrowleft: "a", arrowright: "d", arrowdown: "s", arrowup: "w"};
+function updateKeyDisplay(){
+ document.querySelectorAll("kbd[data-key]").forEach(el=>{
+   el.classList.toggle("pressed", [...pressedKeys].some(key=>(keyAliases[key] || key)===el.dataset.key));
+ });
 }
 
 document.addEventListener("keydown",e=>{
- const k=e.key.toLowerCase();
- if((k==="arrowleft"||k==="a")&&!paused) playerMove(-1);
- else if((k==="arrowright"||k==="d")&&!paused) playerMove(1);
- else if((k==="arrowdown"||k==="s")&&!paused) playerDrop();
- else if((k==="arrowup"||k==="w")&&!paused) playerRotate(1);
- else if(k==="c"&&!paused) holdPiece();
+ if(e.ctrlKey || e.metaKey || e.altKey) return;
+ const key=e.key.toLowerCase();
+ const k=keyAliases[key] || key;
+ if(!["a","d","s","w","c","p","x","k","g","r"].includes(k)) return;
+ e.preventDefault();
+ pressedKeys.add(key);
+ updateKeyDisplay();
+ if(e.repeat && ["p","x","k","g","r"].includes(k)) return;
+ if(k==="r"){
+   board=createMatrix(COLS,ROWS);score=lines=0;level=1;combo=0;
+   dropInterval=800;dropCounter=0;lastTime=performance.now();
+   paused=false;gameOver=false;playerReset();drawHUD();updateFlagsDisplay();
+   return;
+ }
+ if(gameOver) return;
+ if(k==="p"){
+   paused=!paused;
+   lastTime=performance.now();
+   updateFlagsDisplay();
+   return;
+ }
+ if(paused) return;
+ if(k==="a") playerMove(-1);
+ else if(k==="d") playerMove(1);
+ else if(k==="s") playerDrop();
+ else if(k==="w") playerRotate(1);
+ else if(k==="c") holdPiece();
  else if(k==="x"){ENABLE_EXTRA_SHAPES=!ENABLE_EXTRA_SHAPES; playerReset(); updateFlagsDisplay();}
  else if(k==="k"){ENABLE_WALL_KICK=!ENABLE_WALL_KICK; updateFlagsDisplay();}
  else if(k==="g"){ENABLE_GHOST=!ENABLE_GHOST; updateFlagsDisplay();}
- else if(k==="r"){board=createMatrix(COLS,ROWS);score=lines=level=0;combo=0;dropInterval=800;paused=false;gameOver=false;playerReset();drawHUD();updateFlagsDisplay();}
+});
+document.addEventListener("keyup",e=>{
+ pressedKeys.delete(e.key.toLowerCase());
+ updateKeyDisplay();
+});
+window.addEventListener("blur",()=>{
+ pressedKeys.clear();
+ updateKeyDisplay();
 });
 
 board=createMatrix(COLS,ROWS);
