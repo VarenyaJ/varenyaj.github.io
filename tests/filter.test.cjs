@@ -75,3 +75,25 @@ test('empty input and literal markup are handled as text', () => {
  }
  assert.equal(transform('<img src=x onerror=alert(1)>—', 'ascii').output, '<img src=x onerror=alert(1)>--');
 });
+
+
+test('ASCII conversion matches the full reference sample supplied by the user', () => {
+ const input = `How to Use Em Dashes (—), En Dashes (–) , and Hyphens (-) |... hyphen[-] en[–] em[—] bar[―] minus[−] ellipsis[…] quotes[‘’“”«»] bullets[•·] Latin[ÉœßŁ] Greek[αβγ] math[×÷∞]`;
+ const expected = `How to Use Em Dashes (--), En Dashes (-) , and Hyphens (-) |... hyphen[-] en[-] em[--] bar[-] minus[-] ellipsis[...] quotes[''""<<>>] bullets[o.] Latin[EoessL] Greek[???] math[x/?]`;
+ const result = transform(input, 'ascii');
+ assert.equal(result.output, expected);
+ assert.equal(result.unmapped, 4);
+ assert.equal(result.spans.map(span => span.before).join(''), input);
+ assert.equal(result.spans.map(span => span.after).join(''), expected);
+});
+
+test('unsupported ASCII characters leave placeholders rather than disappearing', () => {
+ assert.equal(transform('aαβγ∞z', 'ascii').output, 'a????z');
+ assert.equal(transform('中😀', 'ascii').output, '??');
+ assert.deepEqual(transform('A∞B', 'ascii').spans, [
+  {before:'A', after:'A', changed:false},
+  {before:'∞', after:'?', changed:true},
+  {before:'B', after:'B', changed:false},
+ ]);
+ assert.equal(transform('«x» •', 'ascii').output, '<<x>> o');
+});
