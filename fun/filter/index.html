@@ -120,7 +120,7 @@ footer { grid-column:1/-1; border-top:1px solid var(--border); padding-top:16px;
   <h3 id="encoding">Why do characters sometimes display incorrectly?</h3>
   <p>Text needs a compatible encoding and font. UTF-8 supports Unicode text; an older system limited to ASCII may need simplified characters. Escaping characters writes their numeric representation without changing the original meaning when decoded correctly.</p>
   <h3 id="rules">How do the conversion modes work?</h3>
-  <p>ASCII replacement uses compatibility decomposition and mappings for Latin letters, ligatures, quotes, dashes, and common symbols. Characters with no local ASCII mapping are removed and counted. It is lossy and does not transliterate every writing system.</p>
+  <p>ASCII replacement uses compatibility decomposition and mappings for Latin letters, ligatures, quotes, dashes, and common symbols. Em dashes become two ASCII hyphens (<code>—</code> → <code>--</code>); en dashes become one (<code>–</code> → <code>-</code>). Characters with no local ASCII mapping are removed and counted. It is lossy and does not transliterate every writing system.</p>
   <p>Accent removal uses canonical decomposition and removes combining marks, including marks used outside Latin scripts. Letters such as <code>ø</code> and <code>ł</code> do not canonically decompose and remain unchanged in this mode.</p>
   <p>Unicode mode escapes only non-ASCII characters. Emoji outside the Basic Multilingual Plane use two UTF-16 escapes, such as <code>\ud83d\ude00</code>. This is escaped text, not a complete quoted JSON string; ASCII quotes and backslashes are unchanged.</p>
   <p>Alphanumeric mode keeps English letters and digits. “Keep space” preserves ordinary U+0020 spaces, not tabs, newlines, or non-breaking spaces. The Unicode detector excludes all Unicode letter and number categories; punctuation, spaces, combining marks, and emoji remain.</p>
@@ -141,7 +141,7 @@ footer { grid-column:1/-1; border-top:1px solid var(--border); padding-top:16px;
   <li><a href="#ascii">Why ASCII?</a></li>
   <li><a href="#privacy">Offline & privacy</a></li>
  </ul></nav>
- <h2>Quick example</h2><p class="example"><code>Crème brûlée — œuf</code><br>becomes<br><code>Creme brulee - oeuf</code><br>with ASCII replacement.</p>
+ <h2>Quick example</h2><p class="example"><code>Crème brûlée — œuf</code><br>becomes<br><code>Creme brulee -- oeuf</code><br>with ASCII replacement.</p>
  <h2>Keywords</h2><p class="small">Unicode · ASCII · accents · diacritics · symbols · text filtering</p>
  <a href="#top">↑ Back to top</a>
 </aside>
@@ -153,7 +153,7 @@ const ASCII_MAP = Object.freeze({
  'ß':'ss','ẞ':'SS','æ':'ae','Æ':'AE','œ':'oe','Œ':'OE','ø':'o','Ø':'O','ł':'l','Ł':'L',
  'ð':'d','Ð':'D','þ':'th','Þ':'TH','đ':'d','Đ':'D','ħ':'h','Ħ':'H','ı':'i','ŧ':'t','Ŧ':'T','ŋ':'n','Ŋ':'N',
  '‘':"'",'’':"'",'‚':"'",'‛':"'",'“':'"','”':'"','„':'"','‟':'"','«':'"','»':'"',
- '‐':'-','‑':'-','‒':'-','–':'-','—':'-','―':'-','−':'-','…':'...','•':'*','·':'.',
+ '‐':'-','‑':'-','‒':'-','–':'-','—':'--','―':'-','−':'-','…':'...','•':'*','·':'.',
  '©':'(c)','®':'(R)','™':'TM','€':'EUR','£':'GBP','¥':'JPY','¢':'c','×':'x','÷':'/',
  '⁄':'/','∕':'/','≤':'<=','≥':'>=','≠':'!=','∞':'infinity','°':'deg','µ':'u','μ':'u'
 });
