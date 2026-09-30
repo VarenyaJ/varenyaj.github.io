@@ -2,195 +2,305 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Offline Special Character Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Remove, replace, escape, and detect special characters locally, with offline text exports.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Special Characters — Offline Text Tool</title>
 <style>
-  body {
-    font-family: Courier, monospace;
-    background: #111;
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
-  h1 {
-    margin-bottom: 5px;
-  }
-  select, button {
-    margin: 5px;
-    padding: 6px 10px;
-    background: #222;
-    color: #eee;
-    border: 1px solid #555;
-    cursor: pointer;
-  }
-  button:hover, select:hover {
-    background: #333;
-  }
-  textarea {
-    width: 90%;
-    height: 120px;
-    background: #222;
-    color: #0f0;
-    border: 1px solid #555;
-    padding: 10px;
-    resize: vertical;
-    margin-top: 10px;
-  }
-  .panel {
-    display: flex;
-    justify-content: space-between;
-    width: 90%;
-    margin-top: 20px;
-  }
-  .block {
-    width: 48%;
-    background: #222;
-    padding: 10px;
-    border: 1px solid #555;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .highlight {
-    background: #ff0;
-    color: #000;
-  }
-  .label {
-    font-weight: bold;
-    color: #0af;
-    margin-bottom: 5px;
-  }
-  #controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 90%;
-    margin-top: 10px;
-  }
+:root { color-scheme: light; --paper:#f8efd3; --panel:#fcf8ea; --bar:#ece2c3; --ink:#212529; --border:#d0be90; --accent:#900c00; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--paper); color:var(--ink); font:14px/1.5 "Trebuchet MS",Arial,sans-serif; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+button,input,textarea { font:inherit; }
+button { cursor:pointer; border:1px solid var(--border); border-radius:5px; padding:6px 10px; color:#694f10; background:linear-gradient(var(--panel),var(--paper)); }
+button:hover { background:var(--bar); }
+button:disabled { cursor:default; opacity:.5; }
+:focus-visible { outline:3px solid #876722; outline-offset:3px; }
+input { accent-color:var(--accent); }
+.skip { position:absolute; top:-60px; padding:8px; background:white; z-index:2; }
+.skip:focus { top:0; }
+.page { max-width:1120px; min-height:100vh; margin:auto; padding:24px 16px; box-shadow:0 8px 24px #0002; display:grid; grid-template-columns:minmax(230px, .85fr) minmax(0,1.4fr) 180px; gap:20px; align-items:start; }
+.brand { font:bold 30px/1.1 Georgia,serif; color:#694f10; margin:4px 0 8px; }
+.tagline { font-size:12px; color:#655936; margin-bottom:24px; }
+h1 { font:bold small-caps 28px/1.2 Georgia,serif; color:#694f10; margin:0 0 8px; }
+h2,.bar { font:20px/1.4 Georgia,serif; background:var(--bar); padding:4px 9px; margin:0 0 8px; color:#694f10; }
+h3 { font-size:16px; color:#7c7a02; margin:18px 0 6px; }
+p { margin:8px 0 14px; }
+.breadcrumb { font-size:12px; margin-bottom:20px; color:#655936; }
+form { background:var(--panel); border:1px solid var(--bar); padding:12px; margin-bottom:22px; }
+form h2 { margin:-12px -12px 12px; font-size:19px; font-weight:bold; }
+label.text-label { display:block; color:var(--accent); font-variant:small-caps; margin-bottom:4px; }
+textarea { display:block; width:100%; min-height:115px; resize:vertical; padding:8px; border:1px solid var(--border); border-radius:7px; background:white; color:var(--ink); font:14px/1.5 "Lucida Console",monospace; }
+fieldset { border:0; margin:12px 0; padding:0; min-width:0; }
+legend { font-weight:bold; margin-bottom:5px; }
+.option { display:flex; align-items:baseline; gap:6px; margin:7px 0; }
+.option input { flex:none; }
+.keep-space { margin-left:24px; }
+.actions { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+.submit { display:block; margin:14px auto 3px; font-weight:bold; text-transform:uppercase; }
+.small { font-size:12px; color:#655936; }
+.results { min-width:0; }
+.result-text { white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.6 "Lucida Console",monospace; margin:8px 0; padding:8px; background:var(--panel); border:1px solid var(--bar); min-height:65px; max-height:440px; overflow:auto; }
+mark { color:#452c00; background:#ffe39a; }
+#result-status { min-height:24px; }
+#copy-status { min-height:20px; }
+.example { padding:8px; background:#f5e7c7; border-block:1px solid var(--panel); }
+code { overflow-wrap:anywhere; }
+nav ul { list-style:none; padding:0 8px; }
+nav li { margin:9px 0; }
+nav a { font-size:13px; }
+nav a::before { content:'› '; }
+.faq { margin-top:25px; }
+footer { grid-column:1/-1; border-top:1px solid var(--border); padding-top:16px; text-align:center; color:#655936; font-size:12px; }
+.status { overflow-wrap:anywhere; }
+@media (max-width:960px) { .page { grid-template-columns:minmax(220px,.8fr) minmax(0,1.2fr); } .sidebar { grid-column:1/-1; } nav ul { display:flex; flex-wrap:wrap; gap:4px 18px; } }
+@media (max-width:620px) { .page { display:flex; flex-direction:column; padding:16px 12px; gap:18px; } main { display:contents; } main > * { width:100%; } .faq { order:2; } .results { order:1; width:100%; } .sidebar { order:3; width:100%; } footer { order:4; width:100%; } .brand,.tagline { display:none; } textarea { font-size:16px; } button { min-height:44px; } .option { padding:3px 0; } }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 </style>
 </head>
-<body>
-<h1>Special Character Converter (Offline)</h1>
-
-<textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
-
-<div id="controls">
-  <select id="modeSelect">
-    <option value="ascii">Replace special characters by ASCII</option>
-    <option value="removeAccents">Remove accents and diacritics</option>
-    <option value="unicode">Replace by Unicode \\uXXXX</option>
-    <option value="alnum">Remove all non-alphanumeric (A-Z0-9)</option>
-    <option value="keepSpecial">Keep only non-ASCII special characters</option>
-    <option value="keepNonLatin">Keep only non-latin (not A-Z0-9)</option>
-    <option value="keepNonLetterDigit">Keep only non-letter/non-digit (Unicode)</option>
-  </select>
-  <button onclick="applyTransform()">Transform</button>
-  <button onclick="copyResult()">Copy Result</button>
-  <button onclick="resetText()">Reset</button>
+<body id="top">
+<a class="skip" href="#main">Skip to text tools</a>
+<div class="page">
+<aside class="results" aria-label="Results">
+ <div class="brand">Special<br>Characters</div>
+ <p class="tagline">Local text tools · Works offline</p>
+ <h2 id="results-heading">Results</h2>
+ <p id="result-status" class="status" role="status">Choose a tool and enter your text.</p>
+ <div class="actions">
+  <button id="copy" disabled>Copy</button>
+  <button id="download-txt" disabled>Save TXT</button>
+  <button id="download-csv" disabled>Save CSV</button>
+ </div>
+ <p id="copy-status" class="small status" role="status"></p>
+ <h3>After</h3>
+ <div id="after" class="result-text" tabindex="0" aria-label="Transformed text"></div>
+ <details><summary>Before / highlighted changes</summary>
+  <p class="small">Highlighted spans were changed or removed. Exports contain only the exact result.</p>
+  <div id="before" class="result-text" tabindex="0" aria-label="Original text"></div>
+ </details>
+ <p class="small">Text stays in this browser. Each form is remembered locally when browser storage is available. Reset clears its saved text and options.</p>
+</aside>
+<main id="main">
+ <h1>Special Characters</h1>
+ <div class="breadcrumb">Data Processing › Text Processing › Special Characters</div>
+ <p>Replace, remove, or find special characters without sending your text anywhere.</p>
+ <form id="remover">
+  <h2 id="removal-heading">Special Characters Removal</h2>
+  <label class="text-label" for="removal-text">Text with special characters</label>
+  <textarea id="removal-text" name="text" spellcheck="false" placeholder="Type or paste your text here…"></textarea>
+  <div class="actions"><button type="button" data-clear="remover">Clear text</button><button type="reset">Reset form</button></div>
+  <fieldset><legend>Choose a replacement</legend>
+   <label class="option"><input type="radio" name="action" value="ascii" checked><span>Replace special characters by ASCII characters</span></label>
+   <label class="option"><input type="radio" name="action" value="removeAccents"><span>Remove only accents and diacritics</span></label>
+   <label class="option"><input type="radio" name="action" value="unicode"><span>Replace by Unicode escapes <code>\uXXXX</code> (JSON)</span></label>
+   <label class="option"><input type="radio" name="action" value="alnum"><span>Remove all non-alphanumeric characters (A–Z, a–z, 0–9)</span></label>
+   <label class="option keep-space"><input type="checkbox" name="keepSpace" disabled><span>Keep space (alphanumeric mode)</span></label>
+  </fieldset>
+  <button class="submit" type="submit">▶ Remove / Convert</button>
+ </form>
+ <form id="detector">
+  <h2 id="detector-heading">Special Character Detector</h2>
+  <label class="text-label" for="detection-text">Text with special characters</label>
+  <textarea id="detection-text" name="text" spellcheck="false" placeholder="Type or paste your text here…"></textarea>
+  <div class="actions"><button type="button" data-clear="detector">Clear text</button><button type="reset">Reset form</button></div>
+  <fieldset><legend>Choose characters to keep</legend>
+   <label class="option"><input type="radio" name="action" value="keepSpecial" checked><span>Keep all non-ASCII special characters</span></label>
+   <label class="option"><input type="radio" name="action" value="keepNonLatin"><span>Keep characters other than Latin A–Z, a–z and digits 0–9</span></label>
+   <label class="option"><input type="radio" name="action" value="keepNonLetterDigit"><span>Keep any non-letter or non-number character (Unicode)</span></label>
+  </fieldset>
+  <button class="submit" type="submit">▶ Detect / Keep</button>
+ </form>
+ <section class="faq" aria-labelledby="faq-heading">
+  <h2 id="faq-heading">Answers to Questions (FAQ)</h2>
+  <h3 id="definition">What is a special character?</h3>
+  <p>It depends on the rule you choose. Punctuation is outside letters and numbers, but many punctuation marks are still ASCII. Accented letters, other writing systems, and emoji use characters beyond ASCII.</p>
+  <p class="example"><code>!</code> and <code>@</code> are ASCII. <code>é</code>, <code>☆</code>, and <code>😀</code> are non-ASCII.</p>
+  <h3 id="encoding">Why do characters sometimes display incorrectly?</h3>
+  <p>Text needs a compatible encoding and font. UTF-8 supports Unicode text; an older system limited to ASCII may need simplified characters. Escaping characters writes their numeric representation without changing the original meaning when decoded correctly.</p>
+  <h3 id="rules">How do the conversion modes work?</h3>
+  <p>ASCII replacement uses compatibility decomposition and mappings for Latin letters, ligatures, quotes, dashes, and common symbols. Characters with no local ASCII mapping are removed and counted. It is lossy and does not transliterate every writing system.</p>
+  <p>Accent removal uses canonical decomposition and removes combining marks, including marks used outside Latin scripts. Letters such as <code>ø</code> and <code>ł</code> do not canonically decompose and remain unchanged in this mode.</p>
+  <p>Unicode mode escapes only non-ASCII characters. Emoji outside the Basic Multilingual Plane use two UTF-16 escapes, such as <code>\ud83d\ude00</code>. This is escaped text, not a complete quoted JSON string; ASCII quotes and backslashes are unchanged.</p>
+  <p>Alphanumeric mode keeps English letters and digits. “Keep space” preserves ordinary U+0020 spaces, not tabs, newlines, or non-breaking spaces. The Unicode detector excludes all Unicode letter and number categories; punctuation, spaces, combining marks, and emoji remain.</p>
+  <h3 id="ascii">Why use ASCII?</h3>
+  <p>ASCII is useful for systems with a restricted character set. Keep Unicode when you need to preserve names, languages, and symbols accurately. Save the original before applying a lossy conversion.</p>
+  <h3 id="privacy">Does this work offline?</h3>
+  <p>Yes. Conversion, copying, and downloads run locally. No analytics, network calls, or remote assets are used. Clear or reset saved inputs when using a shared browser.</p>
+ </section>
+</main>
+<aside class="sidebar">
+ <nav aria-label="Page summary"><h2>Summary</h2><ul>
+  <li><a href="#removal-heading">Special Characters Removal</a></li>
+  <li><a href="#detector-heading">Special Character Detector</a></li>
+  <li><a href="#results-heading">Results</a></li>
+  <li><a href="#definition">What is a special character?</a></li>
+  <li><a href="#encoding">Character encoding</a></li>
+  <li><a href="#rules">Conversion rules</a></li>
+  <li><a href="#ascii">Why ASCII?</a></li>
+  <li><a href="#privacy">Offline & privacy</a></li>
+ </ul></nav>
+ <h2>Quick example</h2><p class="example"><code>Crème brûlée — œuf</code><br>becomes<br><code>Creme brulee - oeuf</code><br>with ASCII replacement.</p>
+ <h2>Keywords</h2><p class="small">Unicode · ASCII · accents · diacritics · symbols · text filtering</p>
+ <a href="#top">↑ Back to top</a>
+</aside>
+<footer>Special Characters · Independent offline implementation · <a href="#rules">Conversion rules</a></footer>
 </div>
-
-<div class="panel">
-  <div class="block">
-    <div class="label">Before</div>
-    <div id="before"></div>
-  </div>
-  <div class="block">
-    <div class="label">After</div>
-    <div id="after"></div>
-  </div>
-</div>
-
 <script>
-function highlightDiff(before, after) {
-  let outBefore = "", outAfter = "";
-  const len = Math.max(before.length, after.length);
-  for (let i=0;i<len;i++){
-    const b = before[i] || "";
-    const a = after[i] || "";
-    if (b !== a) {
-      outBefore += '<span class="highlight">'+(b||" ")+'</span>';
-      outAfter += '<span class="highlight">'+(a||" ")+'</span>';
-    } else {
-      outBefore += b;
-      outAfter += a;
-    }
+'use strict';
+const ASCII_MAP = Object.freeze({
+ 'ß':'ss','ẞ':'SS','æ':'ae','Æ':'AE','œ':'oe','Œ':'OE','ø':'o','Ø':'O','ł':'l','Ł':'L',
+ 'ð':'d','Ð':'D','þ':'th','Þ':'TH','đ':'d','Đ':'D','ħ':'h','Ħ':'H','ı':'i','ŧ':'t','Ŧ':'T','ŋ':'n','Ŋ':'N',
+ '‘':"'",'’':"'",'‚':"'",'‛':"'",'“':'"','”':'"','„':'"','‟':'"','«':'"','»':'"',
+ '‐':'-','‑':'-','‒':'-','–':'-','—':'-','―':'-','−':'-','…':'...','•':'*','·':'.',
+ '©':'(c)','®':'(R)','™':'TM','€':'EUR','£':'GBP','¥':'JPY','¢':'c','×':'x','÷':'/',
+ '⁄':'/','∕':'/','≤':'<=','≥':'>=','≠':'!=','∞':'infinity','°':'deg','µ':'u','μ':'u'
+});
+const MODES = new Set(['ascii','removeAccents','unicode','alnum','keepSpecial','keepNonLatin','keepNonLetterDigit']);
+const segmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined,{granularity:'grapheme'}) : null;
+function textSegments(text) {
+ if (segmenter) return Array.from(segmenter.segment(text), item => item.segment);
+ // Combining marks stay with their base even on browsers without Intl.Segmenter.
+ return text.match(/\P{M}\p{M}*|\p{M}+/gu) || [];
+}
+function asciiReplacement(source) {
+ let text = '', unmapped = 0;
+ for (const original of source) {
+  const mapped = ASCII_MAP[original] ?? original;
+  for (const ch of mapped.normalize('NFKD')) {
+   if (/\p{M}/u.test(ch)) continue;
+   if (ASCII_MAP[ch] !== undefined) text += ASCII_MAP[ch];
+   else if (ch.codePointAt(0) <= 127) text += ch;
+   else unmapped++;
   }
-  return {before: outBefore, after: outAfter};
+ }
+ return {text, unmapped};
 }
-
-function toAscii(str){
-  const map = {
-    'à':'a','á':'a','â':'a','ä':'a','ã':'a','å':'a','ā':'a',
-    'ç':'c','č':'c','ć':'c',
-    'è':'e','é':'e','ê':'e','ë':'e','ē':'e',
-    'ì':'i','í':'i','î':'i','ï':'i','ī':'i',
-    'ñ':'n',
-    'ò':'o','ó':'o','ô':'o','ö':'o','õ':'o','ø':'o','ō':'o',
-    'ù':'u','ú':'u','û':'u','ü':'u','ū':'u',
-    'ý':'y','ÿ':'y',
-    'ß':'ss','œ':'oe','æ':'ae'
-  };
-  return str.split('').map(ch=>map[ch]||ch).join('');
+function convertSegment(source, mode, keepSpace) {
+ switch (mode) {
+  case 'ascii': return asciiReplacement(source);
+  case 'removeAccents': return {text:source.normalize('NFD').replace(/\p{M}/gu,'')};
+  case 'unicode': return {text:Array.from(source, ch => ch.codePointAt(0) <= 127 ? ch : ch.split('').map(unit => '\\u'+unit.charCodeAt(0).toString(16).padStart(4,'0')).join('')).join('')};
+  case 'alnum': return {text:source.replace(keepSpace ? /[^A-Za-z0-9 ]/g : /[^A-Za-z0-9]/g,'')};
+  case 'keepSpecial': return {text:source.replace(/[\x00-\x7f]/g,'')};
+  case 'keepNonLatin': return {text:source.replace(/[A-Za-z0-9]/g,'')};
+  case 'keepNonLetterDigit': return {text:source.replace(/[\p{L}\p{N}]/gu,'')};
+  default: throw new Error('Unknown conversion mode');
+ }
 }
-
-function removeAccents(str){
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function transformText(text, mode, keepSpace = false) {
+ if (!MODES.has(mode)) throw new Error('Unknown conversion mode');
+ let output = '', unmapped = 0;
+ const spans = textSegments(text).map(before => {
+  const result = convertSegment(before, mode, keepSpace);
+  output += result.text;
+  unmapped += result.unmapped || 0;
+  return {before, after:result.text, changed:before !== result.text};
+ });
+ return {output, spans, unmapped};
 }
-
-function toUnicodeEscapes(str){
-  return str.split('').map(ch=>{
-    const code = ch.charCodeAt(0).toString(16).padStart(4,'0');
-    return '\\u'+code;
-  }).join('');
+const forms = [document.getElementById('remover'), document.getElementById('detector')];
+const outputButtons = ['copy','download-txt','download-csv'].map(id => document.getElementById(id));
+let result = null, activeForm = null;
+function storageKey(form) { return 'special-characters:v1:'+form.id; }
+function syncOptions() {
+ const form = forms[0];
+ form.elements.keepSpace.disabled = form.elements.action.value !== 'alnum';
 }
-
-function onlyAlnum(str){
-  return str.replace(/[^A-Za-z0-9]/g,"");
+function saveForm(form) {
+ try { localStorage.setItem(storageKey(form),JSON.stringify({text:form.elements.text.value, mode:form.elements.action.value, keepSpace:!!form.elements.keepSpace?.checked})); } catch (_) { /* Storage is optional. */ }
 }
-
-function keepSpecial(str){
-  return str.replace(/[\x00-\x7F]/g,"");
+function renderSpans(target, spans, side) {
+ const fragment = document.createDocumentFragment();
+ // Coalesce adjacent runs so ordinary text does not create thousands of DOM nodes.
+ let run = '', changed = false;
+ function flush() {
+  if (!run) return;
+  const node = changed ? document.createElement('mark') : document.createTextNode('');
+  node.textContent = run;
+  fragment.append(node);
+  run = '';
+ }
+ for (const span of spans) {
+  if (span.changed !== changed) { flush(); changed = span.changed; }
+  run += span[side];
+ }
+ flush(); target.replaceChildren(fragment);
 }
-
-function keepNonLatin(str){
-  return str.replace(/[A-Za-z0-9]/g,"");
+function runForm(form, save = true) {
+ activeForm = form;
+ const mode = form.elements.action.value;
+ result = transformText(form.elements.text.value, mode, !!form.elements.keepSpace?.checked);
+ renderSpans(document.getElementById('before'),result.spans,'before');
+ renderSpans(document.getElementById('after'),result.spans,'after');
+ const name = form === forms[0] ? 'Removal' : 'Detection';
+ const count = Array.from(result.output).length;
+ document.getElementById('result-status').textContent = name+': '+count+' output character'+(count === 1 ? '' : 's')+'.'+(result.unmapped ? ' Removed '+result.unmapped+' unmapped non-ASCII character'+(result.unmapped === 1 ? '.' : 's.') : '');
+ document.getElementById('copy-status').textContent = '';
+ outputButtons.forEach(button => button.disabled = false);
+ if (save) saveForm(form);
 }
-
-function keepNonLetterDigit(str){
-  return str.replace(/[\p{L}\p{N}]/gu,"");
+for (const form of forms) {
+ try {
+  const saved = JSON.parse(localStorage.getItem(storageKey(form)));
+  if (saved && typeof saved.text === 'string') form.elements.text.value = saved.text;
+  if (saved && Array.from(form.querySelectorAll('[name="action"]')).some(input => input.value === saved.mode)) form.elements.action.value = saved.mode;
+  if (form.elements.keepSpace) form.elements.keepSpace.checked = saved?.keepSpace === true;
+ } catch (_) { /* Invalid or unavailable storage does not block the tool. */ }
+ form.addEventListener('submit', event => {
+  event.preventDefault(); runForm(form);
+  if (window.matchMedia('(max-width:620px)').matches) document.getElementById('results-heading').scrollIntoView({block:'start'});
+ });
+ form.addEventListener('input', () => { syncOptions(); runForm(form); });
+ form.addEventListener('change', () => { syncOptions(); runForm(form); });
+ form.addEventListener('reset', () => {
+  try { localStorage.removeItem(storageKey(form)); } catch (_) {}
+  // Native reset applies after the reset event.
+  setTimeout(() => { syncOptions(); if (activeForm === form) runForm(form,false); },0);
+ });
 }
-
-function applyTransform(){
-  const mode = document.getElementById("modeSelect").value;
-  const input = document.getElementById("inputText").value;
-  let output = "";
-  switch(mode){
-    case 'ascii': output = toAscii(input); break;
-    case 'removeAccents': output = removeAccents(input); break;
-    case 'unicode': output = toUnicodeEscapes(input); break;
-    case 'alnum': output = onlyAlnum(input); break;
-    case 'keepSpecial': output = keepSpecial(input); break;
-    case 'keepNonLatin': output = keepNonLatin(input); break;
-    case 'keepNonLetterDigit': output = keepNonLetterDigit(input); break;
+syncOptions();
+document.querySelectorAll('[data-clear]').forEach(button => button.addEventListener('click', () => {
+ const form = document.getElementById(button.dataset.clear);
+ form.elements.text.value = ''; runForm(form); form.elements.text.focus();
+}));
+async function copyResult() {
+ if (!result) return;
+ const text = result.output;
+ const status = document.getElementById('copy-status');
+ try {
+  if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+  await navigator.clipboard.writeText(text);
+  status.textContent = 'Result copied.';
+ } catch (_) {
+  const field = document.createElement('textarea');
+  field.value = text; field.setAttribute('aria-label','Copy result manually');
+  document.getElementById('after').after(field);
+  field.focus(); field.select(); field.setSelectionRange(0,text.length);
+  let copied = false;
+  try { copied = document.execCommand('copy'); } catch (_) {}
+  if (copied) { field.remove(); document.getElementById('copy').focus(); status.textContent = 'Result copied.'; }
+  else {
+   status.textContent = 'Copy is unavailable. Copy the selected text manually.';
+   field.addEventListener('blur', () => field.remove(),{once:true});
   }
-  const diff = highlightDiff(input, output);
-  document.getElementById("before").innerHTML = diff.before;
-  document.getElementById("after").innerHTML = diff.after;
+ }
 }
-
-function copyResult(){
-  const afterText = document.getElementById("after").innerText;
-  navigator.clipboard.writeText(afterText).then(()=>alert("Result copied!"));
+function csvResult(text) { return 'result\r\n"'+text.replace(/"/g,'""')+'"\r\n'; }
+function downloadResult(format) {
+ if (!result) return;
+ const text = format === 'csv' ? csvResult(result.output) : result.output;
+ const blob = new Blob([text],{type:format === 'csv' ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8'});
+ const url = URL.createObjectURL(blob);
+ const link = document.createElement('a');
+ link.href = url; link.download = 'special-characters.'+format;
+ document.body.append(link); link.click(); link.remove();
+ setTimeout(() => URL.revokeObjectURL(url),1000);
 }
-
-function resetText(){
-  document.getElementById("inputText").value = "";
-  document.getElementById("before").innerHTML = "";
-  document.getElementById("after").innerHTML = "";
-}
-
-document.getElementById("inputText").addEventListener("input", applyTransform);
+document.getElementById('copy').addEventListener('click',copyResult);
+document.getElementById('download-txt').addEventListener('click',() => downloadResult('txt'));
+document.getElementById('download-csv').addEventListener('click',() => downloadResult('csv'));
 </script>
 </body>
 </html>

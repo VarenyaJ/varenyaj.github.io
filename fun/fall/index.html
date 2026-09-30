@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Tetris Deluxe v6</title>
 <style>
  body {
@@ -100,6 +100,36 @@
    line-height: 1.5em;
    max-width: 320px;
  }
+
+ * { box-sizing: border-box; }
+ body { padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
+ #gameCanvas { box-sizing: content-box; image-rendering: pixelated; flex: none; }
+ #touch-controls { display: none; gap: 8px; width: min(100%, 360px); margin-top: 12px; }
+ .touch-row { display: flex; justify-content: center; gap: 8px; }
+ #touch-controls button { min-width: 44px; min-height: 48px; flex: 1; padding: 8px; border: 1px solid #777; border-radius: 7px; background: #292929; color: #fff; font: bold 15px Courier, monospace; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+ #touch-controls button.pressed, #touch-controls button[aria-pressed="true"] { background: #b5ff52; color: #111; }
+ #touch-controls button:disabled { opacity: .45; }
+ #touch-controls button:focus-visible { outline: 3px solid #b5ff52; outline-offset: 2px; }
+ #touch-controls .secondary button { min-height: 44px; font-size: 13px; }
+ #flags summary { cursor: pointer; }
+ @media (max-width: 700px), (any-pointer: coarse) {
+   h1 { font-size: 22px; }
+   #game-area { gap: 10px; flex-wrap: nowrap; width: 100%; }
+   #hud { flex: none; min-width: 0; width: 125px; padding: 6px; font-size: 12px; }
+   #preview, #hold { width: 52px; height: 52px; margin-bottom: 4px; }
+   #flags { font-size: 10px; }
+   .flag { gap: 4px; }
+   #touch-controls { display: grid; }
+   #controls { font-size: 11px; }
+ }
+ @media (max-height: 540px) and (orientation: landscape) {
+   body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 260px); column-gap: 12px; align-content: start; }
+   h1 { grid-column: 1 / -1; text-align: center; font-size: 18px; margin-bottom: 6px; }
+   #game-area { grid-column: 1; grid-row: 2 / 4; }
+   #touch-controls { grid-column: 2; grid-row: 2; align-self: end; }
+   #controls { grid-column: 2; grid-row: 3; }
+   #preview, #hold { width: 40px; height: 40px; }
+ }
 </style>
 </head>
 <body>
@@ -121,6 +151,21 @@
  </div>
 </div>
 
+<div id="touch-controls" role="group" aria-label="Touch game controls">
+ <div class="touch-row">
+  <button type="button" data-action="a" aria-label="Move left">◀ Left</button>
+  <button type="button" data-action="s" aria-label="Drop one row">▼ Down</button>
+  <button type="button" data-action="d" aria-label="Move right">Right ▶</button>
+ </div>
+ <div class="touch-row">
+  <button type="button" data-action="w" aria-label="Rotate clockwise">↻ Rotate</button>
+  <button type="button" data-action="p" aria-pressed="false">Pause</button>
+ </div>
+ <div class="touch-row secondary">
+  <button type="button" data-action="c">Hold</button>
+  <button type="button" data-action="r">Restart</button>
+ </div>
+</div>
 <div id="controls">
  Move: <kbd data-key="a">A</kbd>/<kbd data-key="d">D</kbd> |
  Rotate: <kbd data-key="w">W</kbd> | Drop: <kbd data-key="s">S</kbd> |
@@ -154,6 +199,8 @@ let score = 0, lines = 0, level = 1, dropInterval = 800;
 let paused = false, gameOver = false;
 let combo = 0, canHold = true;
 let lastTime = 0, dropCounter = 0;
+let highScore = 0;
+try { highScore = Number(localStorage.getItem("highscore")) || 0; } catch (_) {}
 let nextMatrix = null;
 let holdMatrix = null;
 
@@ -235,7 +282,7 @@ function drawHUD(){
  document.getElementById("score").textContent="Score: "+score;
  document.getElementById("lines").textContent="Lines: "+lines;
  document.getElementById("level").textContent="Level: "+level;
- document.getElementById("highscore").textContent="High Score: "+(localStorage.getItem("highscore")||0);
+ document.getElementById("highscore").textContent="High Score: "+highScore;
 }
 
 function arenaSweep(){
@@ -267,7 +314,16 @@ function playerReset(){
  nextMatrix=getShapes()[shapes[Math.floor(Math.random()*shapes.length)]].map(r=>r.slice());
  drawPreview();
  canHold=true;
- if(collide(board,player)){gameOver=true;}
+ if(collide(board,player)){
+   gameOver=true;
+   clearHeldInputs();
+   if(score > highScore){
+     highScore=score;
+     try { localStorage.setItem("highscore",String(highScore)); } catch (_) {}
+   }
+   drawHUD();
+   updateFlagsDisplay();
+ }
 }
 
 function drawPreview(){
@@ -334,7 +390,17 @@ function draw(){
    ctx.fillText("PAUSED",canvas.width/2,canvas.height/2-8);
    ctx.fillStyle="#fff";
    ctx.font="13px monospace";
-   ctx.fillText("Press P to resume",canvas.width/2,canvas.height/2+20);
+   ctx.fillText("P / Resume to play",canvas.width/2,canvas.height/2+20);
+   ctx.restore();
+ }
+ if(gameOver){
+   ctx.fillStyle="rgba(0,0,0,0.85)";
+   ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.save();ctx.textAlign="center";ctx.fillStyle="#b5ff52";
+   ctx.font="bold 22px monospace";
+   ctx.fillText("GAME OVER",canvas.width/2,canvas.height/2-8);
+   ctx.fillStyle="#fff";ctx.font="13px monospace";
+   ctx.fillText("R / Restart to play",canvas.width/2,canvas.height/2+20);
    ctx.restore();
  }
 }
@@ -348,10 +414,19 @@ function updateFlagsDisplay() {
    ["Levels", ENABLE_LEVELS],
    ["Hold", ENABLE_HOLD]
  ];
- document.getElementById("flags").innerHTML = "<b>Settings</b>" + flags.map(
+ const flagsElement = document.getElementById("flags");
+ const wasOpen = flagsElement.querySelector("details")?.open ?? !touchLayout.matches;
+ flagsElement.innerHTML = '<details'+(wasOpen ? ' open' : '')+'><summary>Settings</summary>' + flags.map(
    ([label, enabled]) => `<div class="flag"><span>${label}</span><span class="state${enabled ? " active" : ""}">${enabled ? "ON" : "OFF"}</span></div>`
- ).join("");
- document.getElementById("pause-status").textContent = paused ? "Paused — P to resume" : "Playing";
+ ).join("")+'</details>';
+ document.getElementById("pause-status").textContent = gameOver ? "Game over — restart to play" : paused ? "Paused — P / Resume to play" : "Playing";
+ const pauseButton = document.querySelector('[data-action="p"]');
+ pauseButton.textContent = paused ? "Resume" : "Pause";
+ pauseButton.setAttribute("aria-pressed",String(paused));
+ document.querySelectorAll("#touch-controls button").forEach(button => {
+   const action=button.dataset.action;
+   button.disabled = action !== "r" && (gameOver || (paused && action !== "p"));
+ });
 }
 
 function update(time=0){
@@ -365,30 +440,41 @@ function update(time=0){
 }
 
 const pressedKeys = new Set();
+const activePointers = new Map();
 const keyAliases = {arrowleft: "a", arrowright: "d", arrowdown: "s", arrowup: "w"};
+const touchLayout = window.matchMedia("(max-width: 700px), (any-pointer: coarse)");
+const landscapeLayout = window.matchMedia("(max-height: 540px) and (orientation: landscape)");
 function updateKeyDisplay(){
- document.querySelectorAll("kbd[data-key]").forEach(el=>{
-   el.classList.toggle("pressed", [...pressedKeys].some(key=>(keyAliases[key] || key)===el.dataset.key));
- });
+ const active = new Set([...pressedKeys].map(key => keyAliases[key] || key));
+ for(const pointer of activePointers.values()) active.add(pointer.action);
+ document.querySelectorAll("kbd[data-key]").forEach(el => el.classList.toggle("pressed",active.has(el.dataset.key)));
+ document.querySelectorAll("[data-action]").forEach(el => el.classList.toggle("pressed",active.has(el.dataset.action)));
 }
-
-document.addEventListener("keydown",e=>{
- if(e.ctrlKey || e.metaKey || e.altKey) return;
- const key=e.key.toLowerCase();
- const k=keyAliases[key] || key;
- if(!["a","d","s","w","c","p","x","k","g","r"].includes(k)) return;
- e.preventDefault();
- pressedKeys.add(key);
+function releasePointer(id){
+ const pointer=activePointers.get(id);
+ if(!pointer) return;
+ clearTimeout(pointer.timer);
+ activePointers.delete(id);
+ if(pointer.button.hasPointerCapture(id)) pointer.button.releasePointerCapture(id);
  updateKeyDisplay();
- if(e.repeat && ["p","x","k","g","r"].includes(k)) return;
+}
+function clearHeldInputs(){
+ for(const id of [...activePointers.keys()]) releasePointer(id);
+ pressedKeys.clear();
+ updateKeyDisplay();
+}
+function performAction(k){
  if(k==="r"){
+   clearHeldInputs();
    board=createMatrix(COLS,ROWS);score=lines=0;level=1;combo=0;
    dropInterval=800;dropCounter=0;lastTime=performance.now();
+   holdMatrix=null;nextMatrix=null;canHold=true;drawHold();
    paused=false;gameOver=false;playerReset();drawHUD();updateFlagsDisplay();
    return;
  }
  if(gameOver) return;
  if(k==="p"){
+   clearHeldInputs();
    paused=!paused;
    lastTime=performance.now();
    updateFlagsDisplay();
@@ -403,15 +489,77 @@ document.addEventListener("keydown",e=>{
  else if(k==="x"){ENABLE_EXTRA_SHAPES=!ENABLE_EXTRA_SHAPES; playerReset(); updateFlagsDisplay();}
  else if(k==="k"){ENABLE_WALL_KICK=!ENABLE_WALL_KICK; updateFlagsDisplay();}
  else if(k==="g"){ENABLE_GHOST=!ENABLE_GHOST; updateFlagsDisplay();}
+}
+document.addEventListener("keydown",e=>{
+ if(e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input,textarea,select,[contenteditable]")) return;
+ const key=e.key.toLowerCase();
+ const k=keyAliases[key] || key;
+ if(!["a","d","s","w","c","p","x","k","g","r"].includes(k)) return;
+ e.preventDefault();
+ pressedKeys.add(key);
+ updateKeyDisplay();
+ if(e.repeat && ["p","x","k","g","r"].includes(k)) return;
+ performAction(k);
 });
 document.addEventListener("keyup",e=>{
  pressedKeys.delete(e.key.toLowerCase());
  updateKeyDisplay();
 });
-window.addEventListener("blur",()=>{
- pressedKeys.clear();
- updateKeyDisplay();
+for(const button of document.querySelectorAll("#touch-controls button")){
+ button.addEventListener("contextmenu",event=>event.preventDefault());
+ button.addEventListener("pointerdown",event=>{
+   if(event.button !== 0 || button.disabled) return;
+   event.preventDefault();
+   const action=button.dataset.action;
+   button.setPointerCapture(event.pointerId);
+   const pointer={action,button,timer:null};
+   activePointers.set(event.pointerId,pointer);
+   updateKeyDisplay();
+   performAction(action);
+   if(["a","d","s"].includes(action) && activePointers.has(event.pointerId)){
+     const repeat=()=>{
+       if(!activePointers.has(event.pointerId)) return;
+       performAction(action);
+       if(activePointers.has(event.pointerId)) pointer.timer=setTimeout(repeat,80);
+     };
+     pointer.timer=setTimeout(repeat,250);
+   }
+ });
+ for(const eventName of ["pointerup","pointercancel","lostpointercapture"]){
+   button.addEventListener(eventName,event=>releasePointer(event.pointerId));
+ }
+ // Native keyboard and assistive-technology activation has no pointerdown.
+ button.addEventListener("click",event=>{ if(event.detail===0) performAction(button.dataset.action); });
+}
+window.addEventListener("blur",clearHeldInputs);
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){
+   clearHeldInputs();
+   if(!gameOver && !paused) performAction("p");
+ }
 });
+function resizeGame(){
+ if(!touchLayout.matches && !landscapeLayout.matches){
+   canvas.style.width="240px";canvas.style.height="480px";return;
+ }
+ const area=document.getElementById("game-area");
+ const hud=document.getElementById("hud");
+ const controls=document.getElementById("touch-controls");
+ const title=document.querySelector("h1");
+ const viewportHeight=window.visualViewport?.height || window.innerHeight;
+ const bodyStyle=getComputedStyle(document.body);
+ const padding=parseFloat(bodyStyle.paddingTop)+parseFloat(bodyStyle.paddingBottom);
+ const reserved=title.offsetHeight+padding+(landscapeLayout.matches ? 20 : controls.offsetHeight+40);
+ const availableWidth=area.clientWidth-hud.offsetWidth-18;
+ const availableHeight=viewportHeight-reserved;
+ const width=Math.max(60,Math.floor(Math.min(240,availableWidth,availableHeight/2)));
+ canvas.style.width=width+"px";
+ canvas.style.height=(width*2)+"px";
+}
+window.addEventListener("resize",resizeGame);
+window.visualViewport?.addEventListener("resize",resizeGame);
+touchLayout.addEventListener("change",()=>{clearHeldInputs();resizeGame();});
+resizeGame();
 
 board=createMatrix(COLS,ROWS);
 const player={pos:{x:0,y:0},matrix:null};
