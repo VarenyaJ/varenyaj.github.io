@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIFGC data inventory and roadmap</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">RIFGC</p>
+    <h1>Data inventory and roadmap</h1>
+    <p class="lede">Where a multi-site research collaboration's genotype and phenotype data
+      live, who governs access at each site, and what has to be settled before data can move
+      between institutions.</p>
+  </div>
+</header>
+<main class="wrap layout">
+  <nav class="outline" aria-label="Outline">
+    <p class="outline-title">Outline</p>
+    <ol id="outline"></ol>
+  </nav>
+  <div class="content">
+    <section class="notice" aria-labelledby="notice-title">
+      <h2 id="notice-title">What this page is</h2>
+      <p>A planning document rendered from <code>IFGC-Data-Inventory.md</code>. It holds no
+        patient records, identifiers or row-level clinical data, and contact addresses are
+        removed. Entries marked TBD are open questions, not decisions.</p>
+    </section>
+    <section class="summary" id="summary" aria-label="Summary"></section>
+    <div class="search">
+      <label for="filter">Filter tables and lists</label>
+      <input id="filter" type="search" placeholder="e.g. dbGaP, UNSW, consent" autocomplete="off">
+      <p id="filter-count" class="muted" aria-live="polite"></p>
+    </div>
+    <article id="document"><p class="muted">Loading...</p></article>
+  </div>
+</main>
+<footer class="wrap muted">Rendered from the repository's inventory file; edit that file, not this page.</footer>
+<script src="app.js"></script>
+</body>
+</html>
