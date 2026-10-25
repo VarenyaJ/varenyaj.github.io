@@ -1,0 +1,1058 @@
+{
+ "source": "IFGC-Data-Inventory.md",
+ "blocks": [
+  {
+   "type": "heading",
+   "level": 1,
+   "text": "Genotype/Phenotype Data Inventory & Access Planning",
+   "id": "genotype-phenotype-data-inventory-access-planning"
+  },
+  {
+   "type": "paragraph",
+   "text": "*Working document starting with the prenatalSEQ program data*"
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Purpose",
+   "id": "purpose"
+  },
+  {
+   "type": "paragraph",
+   "text": "This document tracks where our genotype and phenotype data currently live, where we intend to consolidate or archive them long-term, who holds access or governance authority at each site, and what remains to be resolved before data can move between institutions. It covers phenotype data (Observer7 and ViewPoint6 ultrasound exports, HPO-coded Phenopackets) and genotype data (VCF/variant-level data), and the storage and access-control options relevant to both - including AnVIL, dbGaP, and institution-hosted storage."
+  },
+  {
+   "type": "paragraph",
+   "text": "Rows marked TBD need an owner/answer, so fill them in as information comes in from each site."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "1. Data Inventory - Who Has What, and Where",
+   "id": "1-data-inventory-who-has-what-and-where"
+  },
+  {
+   "type": "paragraph",
+   "text": "Current state, as best known. Confirm/correct each row with the listed contact; add rows for any site not yet listed."
+  },
+  {
+   "type": "table",
+   "header": [
+    "Site",
+    "Data type",
+    "Format",
+    "Current location",
+    "Access status",
+    "Notes / contact"
+   ],
+   "rows": [
+    [
+     "CUIMC (Columbia)",
+     "Phenotype\n(ultrasound exports)",
+     "Observer7 JSON",
+     "CUIMC AWS (HIPAA-compliant transfer)",
+     "IRB-approved (Feb 2026); transfer execution completed",
+     "Derek Delpero (VisionChips/Observer) ready to run export; Andy Surujnarine (CUIMC IT) approved the AWS transfer"
+    ],
+    [
+     "CUIMC (Columbia)",
+     "Genotype\n(VCF)",
+     "VCF",
+     "TBD",
+     "N/A - no real variant data ingested",
+     "Pipeline tooling built and tested only against synthetic VCFs; no live genotype data source connected yet"
+    ],
+    [
+     "Massachusetts General Hospital / Boston Children's Hospital / Broad Institute",
+     "TBD",
+     "TBD",
+     "TBD",
+     "TBD",
+     "Dr. Michael Duyzend (MGH/BCH/Broad)"
+    ],
+    [
+     "Charité / BIH",
+     "TBD",
+     "TBD",
+     "TBD",
+     "TBD",
+     "Dr. Peter Robinson (BIH-Charité)"
+    ],
+    [
+     "UNSW",
+     "TBD",
+     "TBD",
+     "TBD",
+     "TBD",
+     "Tony Roscioli (UNSW / Sydney Children's Hospital)"
+    ]
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "2. Where We Might Store It Long-Term",
+   "id": "2-where-we-might-store-it-long-term"
+  },
+  {
+   "type": "paragraph",
+   "text": "Options under consideration, with what each one actually requires from us. None of these are decided - use this as a comparison, not a recommendation."
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "AnVIL (NHGRI Genomic Data Science Analysis, Visualization & Informatics Lab-space)",
+   "id": "anvil-nhgri-genomic-data-science-analysis-visualization-informatics-lab-space"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Cloud workspace (Terra, on Google Cloud or Azure) built for hosting and jointly analyzing large-scale genomic data (VCF, CRAM, etc.) alongside phenotype data."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Controlled-access data on AnVIL is gated through dbGaP-style authorization via NIH's RAS (Researcher Auth Service) - so using AnVIL for controlled-access data usually implies a dbGaP registration too."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Good fit if we want collaborators to run analyses (Hail, notebooks) directly against the data rather than just downloading it."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Costs scale with cloud compute/storage usage; billing account and workspace ownership need to be assigned to someone."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "dbGaP (database of Genotypes and Phenotypes, NIH/NCBI)",
+   "id": "dbgap-database-of-genotypes-and-phenotypes-nih-ncbi"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "The standard NIH controlled-access repository for genotype-phenotype study data. We would submit under an approved Genomic Data Sharing (GDS) plan."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Every dataset carries a consent code (e.g. GRU, HMB, DS-<condition>) that legally constrains who can request it and for what purpose - this has to trace back to what patients actually consented to, not what's convenient for us."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Access requests (ours, or others' requests for our data) go through dbGaP's Data Access Committee (DAC) via a Data Access Request (DAR), tied to a specific research use statement."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "One-time submission effort, then ongoing DAC review each time someone requests access - including us, if we want to use others' dbGaP-hosted studies."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Institution-hosted storage (e.g. CUIMC AWS)",
+   "id": "institution-hosted-storage-e-g-cuimc-aws"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Where our phenotype data lives today. Good for near-term operational use within CUIMC."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Not queryable or shareable by outside collaborators without a separate Data Use Agreement (DUA) per partner institution - doesn't scale well as more sites join."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Federated query (longer-term, not yet built)",
+   "id": "federated-query-longer-term-not-yet-built"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "GA4GH Beacon v2-style federated query across partner sites, so each site keeps its own data and only answers policy-filtered queries - this is the direction the project's own architecture is heading, but is not a near-term storage decision."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "3. Restrictions and Access Requirements",
+   "id": "3-restrictions-and-access-requirements"
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "PHI / HIPAA",
+   "id": "phi-hipaa"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Anything carrying dates of birth, MRNs, exact small-geography identifiers, etc. is PHI. Any cloud vendor touching it needs a signed Business Associate Agreement (BAA) first."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "The current CUIMC -> AWS transfer already has CUIMC IT sign-off and IRB approval (Feb 2026) - treat that as the model for what has to be in place before any other site's data moves."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "IRB",
+   "id": "irb"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Each contributing site needs its own IRB approval (or a formal reliance agreement onto a single IRB of record) before its data can leave that institution."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Confirm this exists at each site before assuming any transfer is possible, even internally between collaborators."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Data Use Agreements (DUA)",
+   "id": "data-use-agreements-dua"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Needed bilaterally between any two institutions sharing data, independent of and in addition to IRB approval. A DUA should exist before data physically moves, not after."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "dbGaP / DUOS and consent codes",
+   "id": "dbgap-duos-and-consent-codes"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "If we submit to dbGaP, the consent code we register (GRU / HMB / DS-<condition> / etc.) has to match what patients actually agreed to - check original consent language per site, and don't default to the broadest code."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Requesting access to someone else's dbGaP-hosted dataset means going through their DAC with a specific research-use statement; this is not instant."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "De-identification level",
+   "id": "de-identification-level"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Confirm whether data entering any shared/analysis environment is HIPAA Safe-Harbor de-identified, a Limited Data Set, or fully identifiable - this changes which of the above requirements actually apply."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "4. Key Contacts",
+   "id": "4-key-contacts"
+  },
+  {
+   "type": "table",
+   "header": [
+    "Name",
+    "Role",
+    "Site",
+    "Relevant to"
+   ],
+   "rows": [
+    [
+     "Dr. Ronald Wapner",
+     "PI, OB/GYN",
+     "Columbia (CUIMC)",
+     "CUIMC-side data + Repository Ownership"
+    ],
+    [
+     "Dr. Michael Duyzend, Ph.D.",
+     "PI, Pediatrics",
+     "MGH / Broad Institute",
+     "Broad-side data + Repository Ownership"
+    ],
+    [
+     "Dr. Peter Robinson",
+     "PI, Pediatrics",
+     "BIH-Charité",
+     "Charité-side data + Phenopacket tooling + Repository Ownership"
+    ],
+    [
+     "Varenya Jain",
+     "Bioinformatics Developer",
+     "CUIMC and BIH-Charité",
+     "Prenatal Software Development, Repository Architecture, Federation via Beacon network + Repository Officer"
+    ],
+    [
+     "Monica Salani, Ph.D.",
+     "Project Manager",
+     "MGH / Broad affiliate",
+     "Data organization and project management + Repository Officer"
+    ],
+    [
+     "Jessica Giordano, MS, CGC",
+     "Genetic counselor, Columbia Ob/Gyn; primary study manager, NICHD PrenatalSEQ",
+     "Columbia (CUIMC)",
+     "Study-level contact - consent language, patient data flow + Repository Officer"
+    ],
+    [
+     "Camilla Zarate",
+     "Program Manager",
+     "Columbia (CUIMC)",
+     "Organization/coordination + Repository Officer"
+    ],
+    [
+     "Amy Brower, Ph.D.",
+     "Coordinator (supporting the program)",
+     "Creighton University - external",
+     "Coordination + Repository Officer"
+    ],
+    [
+     "Isabella Pabón",
+     "Bioinformatics Specialist at the Broad",
+     "Broad (Talkowski Lab)",
+     "Machine Readable Consent Guidance via GA4GH [DUOs](https://github.com/EBISPOT/DUO.git) + Terra platform developer"
+    ],
+    [
+     "**Affiliates**",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Derek Delpero",
+     "VisionChips/Observer",
+     "Columbia (CUIMC)",
+     "Executes Observer JSON export"
+    ],
+    [
+     "Aimee Heeze, RT(R), RDMS",
+     "Sonographer Manager, Dept. of OB/GYN, Maternal Fetal Medicine",
+     "EVMS",
+     "Sonography/imaging site contact"
+    ],
+    [
+     "Andy Surujnarine",
+     "IT",
+     "Columbia (CUIMC)",
+     "Approved HIPAA-compliant AWS transfer"
+    ],
+    [
+     "Cynthia F. Masson / Melissa Quinn",
+     "Compliance / IRB",
+     "Columbia (CUIMC)",
+     "Signed off on data transfer (Feb 2026)"
+    ],
+    [
+     "Dr. Tony Roscioli",
+     "Collaborator",
+     "UNSW / Sydney Children's Hospital",
+     "UNSW-side data + clinical genetics contact"
+    ],
+    [
+     "**Not yet identified**",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "5. Outstanding Tasks",
+   "id": "5-outstanding-tasks"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Confirm status of the CUIMC Observer7 export execution (Derek Delpero / Andy Surujnarine) - last known to be pending on the CUIMC UNI step."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "For Broad, Charité, UNSW, and the MGH/BCH group: determine whether they currently hold genotype and/or phenotype data, and in what format and location. Update Section 1."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Decide the long-term repository target - AnVIL, dbGaP, institution-hosted, or some combination - based on scale, who needs to query it, and budget/ownership for cloud costs."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Pull and review the original patient consent language at each site before assuming any data may be shared externally, and before selecting a dbGaP consent code."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Identify the IRB/compliance and data-manager point of contact at each partner site (Broad, Charité, UNSW, MGH/BIDMC) - fill in Section 4."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "If dbGaP is chosen: draft a Genomic Data Sharing (GDS) plan and determine the consent code(s) to register the study under."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "If AnVIL is chosen: identify the billing/workspace owner and confirm RAS/dbGaP linkage requirements for controlled-access data."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Confirm BAA status with any cloud vendor before genotype (VCF) data leaves institutional networks."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Outline data accession protocols and integration of the Data Use Ontology with Beacon-derivative"
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Establish one named point of contact per site for ongoing data-access requests, so this doesn't route through ad hoc email threads."
+    },
+    {
+     "depth": 0,
+     "task": true,
+     "done": false,
+     "text": "Establish a list of donors/sponsors along with their requirements/wishlists."
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "6. Glossary",
+   "id": "6-glossary"
+  },
+  {
+   "type": "paragraph",
+   "text": "Terms used elsewhere in this doc, split into two groups: the data-governance/legal acronyms, and clinical/genetics terms a genetic counselor or clinician on the team would use without explanation."
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Data governance and legal",
+   "id": "data-governance-and-legal"
+  },
+  {
+   "type": "table",
+   "header": [
+    "Term",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "PHI",
+     "Protected Health Information - identifiable patient data covered by HIPAA."
+    ],
+    [
+     "HIPAA",
+     "Health Insurance Portability and Accountability Act - the US federal law governing PHI."
+    ],
+    [
+     "IRB",
+     "Institutional Review Board - the body at each institution that approves human-subjects research, including data sharing."
+    ],
+    [
+     "BAA",
+     "Business Associate Agreement - contract required before PHI can touch a third-party vendor (e.g. a cloud provider)."
+    ],
+    [
+     "DUA",
+     "Data Use Agreement - contract between institutions governing how shared data may be used, separate from and in addition to IRB approval."
+    ],
+    [
+     "GDPR",
+     "General Data Protection Regulation - EU law governing personal data; applies to any data touching BIH-Charité."
+    ],
+    [
+     "dbGaP",
+     "database of Genotypes and Phenotypes - NIH/NCBI's controlled-access repository for genotype-phenotype study data."
+    ],
+    [
+     "DAC",
+     "Data Access Committee - the body (at dbGaP or any repository) that reviews and approves/denies access requests."
+    ],
+    [
+     "DAR",
+     "Data Access Request - the formal request submitted to a DAC to use a dataset."
+    ],
+    [
+     "GDS",
+     "Genomic Data Sharing - the NIH policy requiring NIH-funded genomic studies to share data, typically via dbGaP."
+    ],
+    [
+     "DUOS",
+     "Data Use Ontology/Data Use Oversight System - NIH's tool for encoding and automating consent-based data-use restrictions."
+    ],
+    [
+     "RAS",
+     "Researcher Auth Service - NIH's identity system that links a dbGaP-approved researcher to cloud platforms like AnVIL."
+    ],
+    [
+     "AnVIL",
+     "NHGRI's Genomic Data Science Analysis, Visualization, and Informatics Lab-space - a cloud workspace for large-scale genomic data and analysis."
+    ],
+    [
+     "GRU / HMB / DS-<condition>",
+     "Consent codes (General Research Use / Health, Medical & Biomedical / Disease-Specific) that define what a dataset may legally be used for - set by what patients actually consented to, not chosen freely by us."
+    ],
+    [
+     "GINA",
+     "Genetic Information Nondiscrimination Act - US law barring use of genetic data in employment or health-insurance decisions; part of why consent and de-identification matter beyond research ethics."
+    ],
+    [
+     "Safe Harbor / Expert Determination",
+     "The two HIPAA-recognized methods of de-identifying data: removing 18 specific identifier types, versus a qualified statistician certifying re-identification risk is very small."
+    ]
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Clinical and genetics",
+   "id": "clinical-and-genetics"
+  },
+  {
+   "type": "table",
+   "header": [
+    "Term",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "MFM",
+     "Maternal-Fetal Medicine - the OB subspecialty this program is built around (Wapner, Wang, and Roscioli are all MFM/genetics-adjacent)."
+    ],
+    [
+     "CGC / ABGC",
+     "Certified Genetic Counselor / American Board of Genetic Counseling - the credential genetic counselors like Jess Giordano hold."
+    ],
+    [
+     "NIPT",
+     "Non-Invasive Prenatal Testing - a blood-based screen for fetal chromosomal conditions, done early and without procedural risk."
+    ],
+    [
+     "CVS",
+     "Chorionic Villus Sampling - a diagnostic procedure for fetal genetic testing, an alternative to amniocentesis, done earlier in pregnancy."
+    ],
+    [
+     "WES / WGS",
+     "Whole Exome Sequencing / Whole Genome Sequencing - the two main scales of genotype data this program deals with."
+    ],
+    [
+     "Trio sequencing",
+     "Sequencing both parents alongside the fetus/proband, which helps interpret which variants are inherited versus new and which are likely causal."
+    ],
+    [
+     "Proband",
+     "The individual whose case first draws clinical attention to a genetic condition in a family - usually the fetus/patient in our data."
+    ],
+    [
+     "VUS",
+     "Variant of Uncertain Significance - a genetic variant whose clinical impact is not yet established; affects what can responsibly be reported or shared."
+    ],
+    [
+     "ACMG SF list",
+     "The American College of Medical Genetics and Genomics' list of genes recommended for secondary/incidental-findings reporting during sequencing."
+    ],
+    [
+     "Return of results (ROR)",
+     "The site's policy on whether and how incidental or secondary findings get reported back to patients - directly shapes what consent code and data-sharing terms apply."
+    ]
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "7. Workstream",
+   "id": "7-workstream"
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Areas of Work:",
+   "id": "areas-of-work"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Ultrasound software"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Biometry mapped to HPO term, entire biometry into description field"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "LOINC IDs for different assay types"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "Some amount of causal variants; pair VCF with phenopacket"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "Concise clinical object"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Observer7 JSON (VisionChips) working"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "Run on subset of prenatalSeq"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "Compare text-mining extract with original clinical/anatomy impressions"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "ViewPoint 6 (GE) kinda working"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "Need real cases - EVMS is the golden standard due to their comprehensive drop-down system"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "**TODO: Varenya map EVMS drop-downs to software**"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Text mining in progress"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "**TODO: Ron (or Michael) review Observer and ViewPoint clinical impression text extraction**"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "US Report"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "If just PDF, then Varenya will need to devise an input/parse mechanism as there are various PDF formats"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "OCR to text, then text mining, then text to HPO"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "**TODO: figure out what exactly people will be uploading (e.g. proper PDF, image, other?)**"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "**Publish TODOs:** Differential Diagnosis, VCFs?"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "SEQR"
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "LIRICAL, Exomizer, etc."
+    },
+    {
+     "depth": 2,
+     "task": false,
+     "done": false,
+     "text": "X-percentage improvement"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Beacon(ing)"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Connect to Terra"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Make implementation possible for others"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Intake different database types (Mongo, Postgres, Spark, etc.)"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Data model"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Search Internally and externally over phenopackets"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "HPO addition"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Michelle, finalizing HPO terms, put into HPO for last pass"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Survey and use in future"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "***IFGC Showcase - Pilot Repository***"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Collect and Upload ultrasound reports + VCFs + clinical interpretations"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Run prenatal phenopacket software with clinical HPO term annotation"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Link prenatal phenopackets to VCF files"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Implement reanalysis toolkits"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "**Demonstrate Time-Course Phenotypes**"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Setup Beacon Dashboard"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Swap out cases, and can upload"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "GCP compatible → AWS in future"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Implement Accession & Control protocols (Bella)"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "External Ultrasound Collaboration"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Katie Gray, Savni → send test cases dummy excel files that mimic real data from Epic to Varenya"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "GA4GH"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Driver project"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Monarch? - N/A for now"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Geisinger"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Automatic NIH uploads"
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 3,
+   "text": "Papers:",
+   "id": "papers"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper 1: Prenatappkt Software - Varenya, Peter, Ron, Michael"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper 2: Repository Creation via Beacon - Varenya, Michael Gargano, Peter, Ron"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper X: HPO terms - Michelle, Varenya, Michael, Ron, Peter"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper 3: Expanding the Repository with neonatal/postnatal cases via cohort curation - Ellie, Varenya, Michael, Peter, Ron, Jess, etc."
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper 4: FSA reanalysis: Varenya, Michael, Jess, Ron, Peter"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Paper 5: Stillbirth analysis and phenotyping; model."
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "text": "**People & Tasks:**"
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Varenya - beacon software, continue text mining, discuss 501c3"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Michael - figure out Bella, review distilled cases"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Ron - EVMS DTO, review distilled cases"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Peter - text mining, review distilled cases"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Michelle - meet w/ Varenya for HPO terms"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Nikki Legro - Michelle-like, plan for Ellie-esqe project"
+    },
+    {
+     "depth": 0,
+     "task": false,
+     "done": false,
+     "text": "Bella - Michael & Varenya need to meet with her"
+    },
+    {
+     "depth": 1,
+     "task": false,
+     "done": false,
+     "text": "Varenya assigns her to figure out “ultrasound PDF > OCR > data model” or how to prioritize variants"
+    }
+   ]
+  }
+ ]
+}

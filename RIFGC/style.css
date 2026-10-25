@@ -1,0 +1,63 @@
+:root {
+  --bg: #fbfaf7; --panel: #ffffff; --ink: #1d2327; --muted: #5d6870; --line: #e2e0da;
+  --accent: #1f6f78; --accent-soft: #e3f1f2; --warn: #8a5a00; --warn-soft: #fbf1dc;
+  --done: #2e7d32; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14181b; --panel: #1b2125; --ink: #e6e9eb; --muted: #9aa5ad; --line: #2c3439;
+    --accent: #6cc3cc; --accent-soft: #1d3436; --warn: #f0c060; --warn-soft: #3a2f17;
+    --done: #81c784; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14181b; --panel: #1b2125; --ink: #e6e9eb; --muted: #9aa5ad; --line: #2c3439;
+  --accent: #6cc3cc; --accent-soft: #1d3436; --warn: #f0c060; --warn-soft: #3a2f17;
+  --done: #81c784; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 72rem; margin: 0 auto; padding-inline: 1rem; }
+.top { border-bottom: 1px solid var(--line); background: var(--panel); padding-block: 2rem 1.5rem; }
+.eyebrow { margin: 0; color: var(--accent); font-weight: 700; letter-spacing: .08em; font-size: .8rem; }
+h1 { margin: .2rem 0 .5rem; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.lede { margin: 0; max-width: 46rem; color: var(--muted); }
+.layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2rem; padding-block: 1.5rem; }
+@media (max-width: 52rem) { .layout { grid-template-columns: 1fr; } .outline { position: static !important; } }
+.outline { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow: auto; font-size: .92rem; }
+.outline-title { font-weight: 700; margin: 0 0 .5rem; }
+.outline ol { list-style: none; margin: 0; padding: 0; }
+.outline li { margin: .15rem 0; }
+.outline li.l3 { padding-left: .9rem; font-size: .86rem; }
+.outline a { color: var(--muted); text-decoration: none; }
+.outline a:hover, .outline a:focus-visible { color: var(--accent); text-decoration: underline; }
+.notice { background: var(--warn-soft); border-left: 4px solid var(--warn); padding: .8rem 1rem; border-radius: 6px; }
+.notice h2 { margin: 0 0 .3rem; font-size: 1rem; }
+.notice p { margin: 0; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .75rem; margin: 1rem 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .8rem 1rem; }
+.card .n { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.card .t { color: var(--muted); font-size: .88rem; }
+.search { margin: 1rem 0 1.5rem; }
+.search label { font-weight: 600; display: block; margin-bottom: .3rem; }
+.search input { width: 100%; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel); color: var(--ink); font: inherit; }
+.muted { color: var(--muted); }
+article h2 { margin-top: 2.2rem; padding-top: .4rem; border-top: 1px solid var(--line); scroll-margin-top: 1rem; }
+article h3 { margin-top: 1.4rem; scroll-margin-top: 1rem; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; vertical-align: top; padding: .5rem .65rem; border-bottom: 1px solid var(--line); white-space: pre-line; }
+th { background: var(--accent-soft); position: sticky; top: 0; }
+td.tbd { color: var(--muted); font-style: italic; }
+ul.items { padding-left: 1.2rem; }
+ul.items li { margin: .2rem 0; }
+li.task { list-style: none; margin-left: -1.2rem; }
+li.task::before { content: "\2610"; margin-right: .45rem; color: var(--warn); }
+li.task.done::before { content: "\2611"; color: var(--done); }
+li.d1 { margin-left: 1.2rem; } li.d2 { margin-left: 2.4rem; } li.d3 { margin-left: 3.6rem; }
+[hidden] { display: none !important; }
+code { background: var(--accent-soft); padding: 0 .3rem; border-radius: 4px; }
+a { color: var(--accent); }
+footer { padding-block: 1.5rem 2.5rem; font-size: .88rem; }
